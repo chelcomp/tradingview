@@ -9,7 +9,7 @@ iOPModo      = input(3, "[Estrategia] Sentido das operacoes: 0:Off 1:Comprado, 2
 iPrevinir    = input("Nao",  "[Estrategia] Habilitar bloqueio de nova entrada no mesmo dia apos uma saida", options=["Sim","Nao"])=="Sim"
 
 dummyMM= input(false, "[Medias Moveis]-------------------------------------------------------------", type = input.bool )
-iMMModo      = input(3,                                   "[MM] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
+iMMModo      = input(0,                                   "[MM] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
 iMMInv       = input("Nao",                               "[MM] Inverter", options=["Sim", "Nao"]) =="Sim"
 iMMForma     = input("Media curta acima/abaixo da longa", "[MM] Forma de uso", options=["Cruzamento das Medias", "Media curta acima/abaixo da longa"])
 iMMCurtaTipo = input("Exponencial",                       "[MM] Media Curta: Tipo", options=["Simples", "Exponencial"] )
@@ -23,10 +23,10 @@ iMMLongaSrc  = input(close,                               "[MM] Media Longa: Fon
 
 
 dummyHilo= input(false, "[HiLo Activator]----------------------------------------------------------", type = input.bool )
-iHLModo  = input(3,                                      "[HiLo] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
+iHLModo  = input(1,                                      "[HiLo] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
 iHLInv   = input("Nao",                                  "[HiLo] Inverter" , options=["Sim", "Nao"]) =="Sim"
 iHLForma = input("Sentido da escada do HiLo",            "[HiLo] Modo de Operacao", options=["Mudanca no sentido da escada do HiLo", "Sentido da escada do HiLo"])
-iHLLen   = input(11,                                     "[HiLo] Numero de periodos", minval=2)
+iHLLen   = input(1,                                     "[HiLo] Numero de periodos", minval=1, step=5)
 
 
 dummyMACD= input(false, "[MACD]-------------------------------------------------------------------", type = input.bool )
@@ -101,10 +101,10 @@ dummyRisk2  = input(false, "[Criterios de Saida]--------------------------------
 
 iEMartingale    = input(1,   "[Martingale] Dobrar posição na entrada seguinte a uma perda")
 
-iEStopFixo    = input(24.00,   "[Stop fixo de perda] Stop Loss Valor R$")
-iETakeFixo    = input(48.00,   "[Stop fixo de ganho] Stop Gain/Take Profit Valor R$")
-iETSAtivar    = input(21.00,   "[Trailing Stop] Início (Ativacao)")
-iETSDistancia = input(1.00,    "[Trailing Stop] Distância")
+iEStopFixo    = input(24.00,   "[Stop fixo de perda] Stop Loss (Pontos)")
+iETakeFixo    = input(48.00,   "[Stop fixo de ganho] Stop Gain/Take Profit (Pontos)")
+iETSAtivar    = input(21.00,   "[Trailing Stop] Início/Ativacao (Pontos)")
+iETSDistancia = input(1.00,    "[Trailing Stop] Distância (Pontos)")
 
 iEParcialT    = input(0.0,   "[Realizacao parcial] Valor Execucao")
 iEParcialBE =   input("Nao", "[Realizacao parcial] Break-even: Posicionar stop fixo de perda no preco de entrada apos realizacao parcial", options=["Sim","Nao"]) == "Sim"
@@ -125,7 +125,7 @@ iTwt   = input("0900-1659", "Horario final para zerar carteira", type=input.sess
 
 
 // Fix Tick on especial assets
-iFixMinTick = input(0.0, "Ajusta o tick no Tradingview", minval=0.0)
+iFixMinTick = input(0.0, "Ajusta o tick no Tradingview", minval=0.0, type=input.float)
 
 // === DEPENDENCE AND FUNCTIONS ===
 roundTo(v, t) =>
@@ -173,7 +173,7 @@ hlPlot    = 0.0
 hlColor   = color.white
 
 if iHLModo
-    displace = 0
+    displace = 1
 	hlHigh := sma(high, iHLLen)
 	hlLow  := sma(low, iHLLen)
 	hlSentido := close > hlHigh[displace]? 1: close < hlLow[displace]? -1: nz(hlSentido[1])
@@ -442,8 +442,7 @@ eSAR() =>
 			r := -1
 	r
 
-// === SERIES SETUP  GENERAL ===
-minTick  = iFixMinTick ? iFixMinTick: syminfo.mintick
+
 
 // === MANEJO DE DAY TRADE ===
 var netProfit = 0.0
@@ -464,14 +463,14 @@ if yesterday != dayofmonth
 intradayFilledOrder := strategy.closedtrades - intradayFilledOrderLastDay
 intradayLostOrder := strategy.losstrades - intradayLostdOrderLastDay
 
-strategy.risk.max_intraday_loss(iSDPerda, strategy.cash)
-strategy.risk.max_intraday_filled_orders(iSDXTrades)
+//strategy.risk.max_intraday_loss(iSDPerda, strategy.cash)
+//strategy.risk.max_intraday_filled_orders(iSDXTrades+1)
 
 dayProfit = strategy.netprofit - netProfit + strategy.openprofit
 dayStop = dayProfit >= iSDGanho 
 dayStop := dayStop or dayProfit <= -iSDPerda 
-dayStop := dayStop or iSDXTradesLost <= intradayLostOrder 
-dayStop := dayStop or iSDXTrades <= intradayFilledOrder
+dayStop := dayStop or intradayLostOrder >= iSDXTradesLost  
+dayStop := dayStop or intradayFilledOrder >= iSDXTrades
 
 
 // === DAY TRADE TIME RESTRICTION ===
@@ -495,13 +494,22 @@ bgcolor(orderTime? color.white: workTime ? color.yellow: color.orange, transp=80
 
 // === STRATEGY FUNCTIONS ===
 
+// === SERIES SETUP  GENERAL ===
+minTick  = iFixMinTick ? iFixMinTick: syminfo.mintick
+
 // === RISK MANAGEMENT VALUE PREP ===
 // if an input is less than 1, assuming not wanted so we assign 'na' value to disable it.
-eStop = iEStopFixo > 0         ? iEStopFixo / minTick: na
-eTake = iETakeFixo > 0         ? iETakeFixo / minTick: na
-eTS   = iETSAtivar > 0         ? iETSAtivar / minTick: na
-eTSD  = iETSDistancia > 0      ? iETSDistancia / minTick: na
-eParc = iEParcialT > 0         ? iEParcialT / minTick: na
+eStop = iEStopFixo    > 0   ? iEStopFixo    / minTick: na
+eTake = iETakeFixo    > 0   ? iETakeFixo    / minTick: na
+eTS   = iETSAtivar    > 0   ? iETSAtivar    / minTick: na
+eTSD  = iETSDistancia > 0   ? iETSDistancia / minTick: na
+eParc = iEParcialT    > 0   ? iEParcialT    / minTick: na
+
+//eStop = iEStopFixo    > 0   ? iEStopFixo    : na
+//eTake = iETakeFixo    > 0   ? iETakeFixo    : na
+//eTS   = iETSAtivar    > 0   ? iETSAtivar    : na
+//eTSD  = iETSDistancia > 0   ? iETSDistancia : na
+//eParc = iEParcialT    > 0   ? iEParcialT    : na
 
 
 cEntradas() =>
@@ -581,37 +589,39 @@ entradaVenda() =>
 
 //long
 saidaCompra() =>
-	c = 0
-	c := mmSaida   and eMM()   < 0? c + 1: c
-	c := hlSaida   and eHiLo() < 0? c + 1: c
-	c := macdSaida and eMACD() < 0? c + 1: c
-	c := adxSaida  and eADX()  < 0? c + 1: c
-	c := estSaida  and eEST()  < 0? c + 1: c
-	c := vwSaida   and eVWAP() < 0? c + 1: c
-	c := ifrSaida  and eIFR()  < 0? c + 1: c
-	c := bbSaida   and eBB()   < 0? c + 1: c
-	c := atrSaida  and eATR()  < 0? c + 1: c
-	c := sarSaida  and eSAR()  < 0? c + 1: c
+	c = ""
+	c := mmSaida   and eMM()   < 0? c + "A": c
+	c := hlSaida   and eHiLo() < 0? c + "B": c
+	c := macdSaida and eMACD() < 0? c + "C": c
+	c := adxSaida  and eADX()  < 0? c + "D": c
+	c := estSaida  and eEST()  < 0? c + "E": c
+	c := vwSaida   and eVWAP() < 0? c + "F": c
+	c := ifrSaida  and eIFR()  < 0? c + "G": c
+	c := bbSaida   and eBB()   < 0? c + "H": c
+	c := atrSaida  and eATR()  < 0? c + "I": c
+	c := sarSaida  and eSAR()  < 0? c + "J": c
 	compra = strategy.position_size > 0
-	compra := compra and not workTime //or (iSaidaAll? c == cSaidas(): c > 0)
+	compra := compra and c != "" and c == cSaidas()
+	compra := compra and workTime //or (iSaidaAll? c == cSaidas(): c > 0)
 	compra
 	  
 
 // short
 saidaVenda() =>
-	c = 0
-	c := mmSaida   and eMM()   > 0? c + 1: c
-	c := hlSaida   and eHiLo() > 0? c + 1: c
-	c := macdSaida and eMACD() > 0? c + 1: c
-	c := adxSaida  and eADX()  > 0? c + 1: c
-	c := estSaida  and eEST()  > 0? c + 1: c
-	c := vwSaida   and eVWAP() > 0? c + 1: c
-	c := ifrSaida  and eIFR()  > 0? c + 1: c
-	c := bbSaida   and eBB()   > 0? c + 1: c
-	c := atrSaida  and eATR()  > 0? c + 1: c
-	c := sarSaida  and eSAR()  > 0? c + 1: c
+	c = ""
+	c := mmSaida   and eMM()   > 0? c + "A": c
+	c := hlSaida   and eHiLo() > 0? c + "B": c
+	c := macdSaida and eMACD() > 0? c + "C": c
+	c := adxSaida  and eADX()  > 0? c + "D": c
+	c := estSaida  and eEST()  > 0? c + "E": c
+	c := vwSaida   and eVWAP() > 0? c + "F": c
+	c := ifrSaida  and eIFR()  > 0? c + "G": c
+	c := bbSaida   and eBB()   > 0? c + "H": c
+	c := atrSaida  and eATR()  > 0? c + "I": c
+	c := sarSaida  and eSAR()  > 0? c + "J": c
 	venda = strategy.position_size < 0
-	venda := venda and not workTime //or (iSaidaAll? c == cSaidas(): c > 0)
+	venda := venda and c != "" and c == cSaidas()
+	venda := venda and workTime //or (iSaidaAll? c == cSaidas(): c > 0)
 	venda
 
 // === MARTIGALE =========
@@ -647,26 +657,26 @@ if strategy.position_size == 0
     strategy.entry("Venda", strategy.short, qty=ordersToBuy, when=entradaVenda(), comment = "EV")
 else
     ordersToRevert = initialOrderAmount * 1 + (initialOrderAmount * martigaleOrderMultiplier)
-    strategy.order("Compra", strategy.long, qty=ordersToRevert, when=entradaCompra(), comment = "RC: " + openProfit)
-    strategy.order("Venda", strategy.short, qty=ordersToRevert, when=entradaVenda(), comment =  "RV: " + openProfit)
+    strategy.order("Compra", strategy.long, qty=ordersToRevert, when=entradaCompra(), comment = "RC " + openProfit)
+    strategy.order("Venda", strategy.short, qty=ordersToRevert, when=entradaVenda(), comment =  "RV " + openProfit)
 
 
-strategy.close("Compra", when=saidaCompra(), comment = "SC: " + openProfit)
-strategy.close("Venda", when=saidaVenda(), comment = "SV: " + openProfit)
+strategy.close("Compra", when=saidaCompra(), comment = "SC " + openProfit)
+strategy.close("Venda", when=saidaVenda(), comment = "SV " + openProfit)
 
 
-//eStop := iff(positionSize < initialOrderAmount and eParc > 0 and iEParcialBE, 0, eStop)
-if strategy.position_size != 0 and eParc > 0
-    if abs(strategy.position_size) >= initialOrderAmount 
-        strategy.exit("Parcial", qty_percent=50, profit=eParc,trail_points=eTS, trail_offset=eTSD, loss=eStop, comment = "SP1: " + openProfit)
-    else if iEParcialBE
-        strategy.exit("Saida", profit=eTake, trail_points=eTS, trail_offset=eTSD, loss=eParc, comment = "SP2: " + openProfit)
+if strategy.position_size != 0 
+    t = min(eParc, eTake)
+    if eParc >= t and abs(strategy.position_size) >= initialOrderAmount 
+        strategy.exit("Saida", qty_percent=50, profit=t, trail_points=eTS, trail_offset=eTSD, loss=eStop, comment = "Saida Take Parcial")
+    else
+        l = iEParcialBE? eParc: eStop 
+        t := max(eParc, eTake)
+        strategy.exit("Saida", profit=t, trail_points=eTS, trail_offset=eTSD, loss=l, comment = "Saida Take/Loss")
 
-strategy.exit("Saida", profit=eTake, trail_points=eTS, trail_offset=eTSD, loss=eStop, comment = "ST: " + openProfit)
-
-
-getOut = (not workTime or dayStop) and strategy.position_size != 0
-//strategy.cancel_all(getOut)
-strategy.close_all(getOut, comment = "SA: " + openProfit)
+    getOut = (not workTime or dayStop) and strategy.position_size != 0
+    
+    strategy.cancel_all(getOut)
+    strategy.close_all(getOut, comment = "Close ALL")
 
 //plot(syminfo.mintick, "Valor do Tick")

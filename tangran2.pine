@@ -240,8 +240,8 @@ if iMACDModo
     ema_3 = ema(macdLine, iMACDSinal)
     signalLine := macdTipo ? sma_3 : ema_3
 
-plot(iMACDPlot ? macdLine : na,"Linha MACD",color.blue)
-plot(iMACDPlot ? signalLine : na,"Sinal MACD",color.red)
+plot(iMACDPlot ? macdLine + strategy.position_avg_price: na,"Linha MACD",color.blue)
+plot(iMACDPlot ? signalLine + strategy.position_avg_price: na,"Sinal MACD",color.red)
 
 eMACD() =>
 	r = 0
@@ -328,9 +328,10 @@ estD = float(na)
 if iESTModo
 	estK := sma(stoch(close, high, low, iESTLen), iESTSuavK)
 	estD := sma(estK, iESTSuavD)
+
 	
-plot(iESTPlot ? estK : na,"K%", color.blue)
-plot(iESTPlot ? estD : na,"D%", color.orange)
+plot(iESTPlot ? estK + strategy.position_avg_price : na,"K%", color.blue)
+plot(iESTPlot ? estD + strategy.position_avg_price : na,"D%", color.orange)
 
 eEST() =>
 	r = 0

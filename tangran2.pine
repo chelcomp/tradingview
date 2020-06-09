@@ -148,6 +148,10 @@ iTdias = input(365, "Dias apos a data inicial em backtest")
 iTot   = input("0900-1200", "Horario inicial/final para abrir posicoes ", type=input.session)
 iTwt   = input("0900-1659", "Horario final para zerar carteira", type=input.session)
 
+dummyJanela  = input(false, "-----------------------------------------------------------------------", type = input.bool )
+iJanela1 = input ("1800-1800", "Janela De bloqueio de operacoes 1", type=input.session)
+iJanela2 = input ("1800-1800", "Janela De bloqueio de operacoes 2", type=input.session)
+
 
 // Fix Tick on especial assets
 iFixMinTick = input(0.0, "Ajusta o tick no Tradingview", minval=0.0, type=input.float)
@@ -546,12 +550,19 @@ wd = getNum(iTdate, 2)*10 + getNum(iTdate, 1)
 
 wot = time('1', iTot)
 wwt = time('1', iTwt)
+wjan1 = time ('1', iJanela1)
+wjan2 = time ('1', iJanela2)
+
 
 woti = timestamp(iTtz, wy, wm, wd, 0, 0)
 wotf = woti + (iTdias * 86400000)
 inRangeToProcesBt = time>=woti and time <=wotf
 
-orderTime =  time(timeframe.period, iTot) and not dayStop and inRangeToProcesBt
+orderTime =  time(timeframe.period, iTot) 
+orderTime = orderTime and not dayStop 
+orderTime = orderTime and inRangeToProcesBt 
+orderTime = orderTime and na(wjan1) and na(wjan2)
+
 workTime  = time(timeframe.period, iTwt)
 
 // bgcolor(workTime ? na: #FFFFFF, transp=80)

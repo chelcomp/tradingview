@@ -149,8 +149,8 @@ iTot   = input("0900-1200", "Horario inicial/final para abrir posicoes ", type=i
 iTwt   = input("0900-1659", "Horario final para zerar carteira", type=input.session)
 
 dummyJanela  = input(false, "-----------------------------------------------------------------------", type = input.bool )
-iJanela1 = input ("1800-1800", "Janela De bloqueio de operacoes 1", type=input.session)
-iJanela2 = input ("1800-1800", "Janela De bloqueio de operacoes 2", type=input.session)
+iJanela1 = input ("1800-1810", "Janela De bloqueio de operacoes 1", type=input.session)
+iJanela2 = input ("1800-1810", "Janela De bloqueio de operacoes 2", type=input.session)
 
 
 // Fix Tick on especial assets
@@ -561,7 +561,7 @@ inRangeToProcesBt = time>=woti and time <=wotf
 bool orderTime =  time(timeframe.period, iTot) 
 orderTime := orderTime and not dayStop 
 orderTime := orderTime and inRangeToProcesBt 
-orderTime := orderTime and na(wjan1) and na(wjan2)
+orderTime := orderTime and not wjan1 and not wjan2
 
 workTime  = time(timeframe.period, iTwt)
 

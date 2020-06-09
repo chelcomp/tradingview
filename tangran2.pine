@@ -558,10 +558,10 @@ woti = timestamp(iTtz, wy, wm, wd, 0, 0)
 wotf = woti + (iTdias * 86400000)
 inRangeToProcesBt = time>=woti and time <=wotf
 
-orderTime =  time(timeframe.period, iTot) 
-orderTime = orderTime and not dayStop 
-orderTime = orderTime and inRangeToProcesBt 
-orderTime = orderTime and na(wjan1) and na(wjan2)
+bool orderTime =  time(timeframe.period, iTot) 
+orderTime := orderTime and not dayStop 
+orderTime := orderTime and inRangeToProcesBt 
+orderTime := orderTime and na(wjan1) and na(wjan2)
 
 workTime  = time(timeframe.period, iTwt)
 

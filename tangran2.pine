@@ -26,7 +26,7 @@ dummyHilo= input(false, "[HiLo Activator]---------------------------------------
 iHLModo  = input(1,                                      "[HiLo] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
 iHLInv   = input("Nao",                                  "[HiLo] Inverter" , options=["Sim", "Nao"]) =="Sim"
 iHLForma = input("Sentido da escada do HiLo",            "[HiLo] Modo de Operacao", options=["Mudanca no sentido da escada do HiLo", "Sentido da escada do HiLo"])
-iHLLen   = input(1,                                     "[HiLo] Numero de periodos", minval=1, step=5)
+iHLLen   = input(1,                                      "[HiLo] Numero de periodos", minval=1, step=5)
 
 
 dummyMACD= input(false, "[MACD]-------------------------------------------------------------------", type = input.bool )
@@ -43,6 +43,7 @@ iMACDFilVal = input(0.0,                                             "[MACD] Fil
 
 dummyADX= input(false, "[ADX - DI+/DI-]------------------------------------------------------------", type = input.bool )
 iADXModo  = input(0,                             "[ADX] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
+iADXInv   = input("Nao",                         "[ADX] Inverter", options=["Sim", "Nao"]) =="Sim"
 iADXForma = input("Cruzamento do DI+ com o DI-", "[ADX] Forma de uso", options=["Cruzamento do DI+ com o DI-", "DI+ acima/abaixo do DI-"])
 iADXLen   = input(14,                            "[ADX] DI: Número de períodos", minval=1)
 iADXSuave = input(14,                            "[ADX] Suavizador do ADX: Número de períodos", minval=1)
@@ -52,6 +53,7 @@ iADXTrend = input(0,                             "[ADX] Filtro de Aumento/Diminu
 
 dummyEstocastico = input(false, "[Estocastico]-----------------------------------------------------", type = input.bool )
 iESTModo  = input(0,                                                       "[Estocastico] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
+iESTInv   = input("Nao",                                                   "[Estocastico] Inverter", options=["Sim", "Nao"]) =="Sim"
 iESTForma = input("Linha %K suavizada acima/abaixo da linha %D suavizada", "[Estocastico] Forma de uso", options=["Cruzamento da linha %K suavizada com a linha %D suavizada", "Linha %K suavizada acima/abaixo da linha %D suavizada"])
 iESTLen   = input(14,                                                      "[Estocastico] Numero de periodos", minval=1)
 iESTSuavK = input(3,                                                       "[Estocastico] Suavizador da linha K", minval=0)
@@ -61,10 +63,12 @@ iESTMax   = input(0,                                                       "[Est
 
 dummyVWAP  = input(false, "[VWAP]------------------------------------------------------------------", type = input.bool )
 iVWAPModo  = input(0,                                             "[VWAP] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
+iVWAPInv   = input("Nao",                                         "[VWAP] Inverter", options=["Sim", "Nao"]) =="Sim"
 iVWAPForma = input("Compra acima do VWAP / Vende abaixo do VWAP", "[VWAP] Forma de uso: ", options=["Rompimento do VWAP", "Compra acima do VWAP / Vende abaixo do VWAP", "Vende acima do VWAP / Compra abaixo do VWAP"])
 
 dummyIFR  = input(false, "[IFR]--------------------------------------------------------------------", type = input.bool )
 iIFRModo  = input(0,                                                        "[IFR] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
+iIFRInv   = input("Nao",                                                    "[IFR] Inverter", options=["Sim", "Nao"]) =="Sim"
 iIFRForma = input("IFR acima/abaixo dos níveis sobrecomprado/sobrevendido", "[IFR] Forma de uso", options=["Cruzamento do IFR com os níveis", "IFR acima/abaixo dos níveis sobrecomprado/sobrevendido"])
 iIFRSrc   = input(close,                                                    "[IFR] Valor usado")
 iIFRLen   = input(14,                                                       "[IFR] Numero de periodos", minval=1)
@@ -73,6 +77,7 @@ iIFRMax   = input(80.0,                                                     "[IF
 
 dummyBB  = input(false, "[Bandas de Bollinger]-----------------------------------------------------", type = input.bool )
 iBBModo  = input(0,                                   "[BB] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
+iBBInv   = input("Nao",                               "[BB] Inverter", options=["Sim", "Nao"]) =="Sim"
 iBBForma = input("Cruzamento do preco com as bandas", "[BB] Forma de uso", options=["Cruzamento do preco com as bandas", "Preco acima/abaixo das bandas"])
 iBBSrc   = input(close,                               "[BB] Fonte para Bolinger Bands")
 iBBLen   = input(20,                                  "[BB] Numero de periodos", minval=1)
@@ -80,6 +85,7 @@ iBBDes   = input(2.0,                                 "[BB] Desvio", minval=0.00
 
 dummyATR = input(false, "[Stop TR]-----------------------------------------------------------------", type = input.bool )
 iATRModo  = input(0,                                "[ATR] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
+iATRInv   = input("Nao",                            "[ATR] Inverter", options=["Sim", "Nao"]) =="Sim"
 iATRForma = input("Mudanca no sentido do Stop ATR", "[ATR] Forma de uso", options=["Mudanca no sentido do Stop ATR", "Sentido do Stop ATR"])
 iATRTipo  = input("Exponencial",                    "[ATR] Tipo de media", options=["Simples", "Exponencial"] )
 iATRLen   = input(6,                                "[ATR] Numero de periodos", minval=1)
@@ -87,6 +93,7 @@ iATRMult  = input(3.5,                              "[ATR] Desvio/Multiplicador"
 
 dummySAR  = input(false, "[SAR Parabolico]---------------------------------------------------------", type = input.bool )
 iSARModo  = input(0,                                      "[SAR] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
+iSARInv   = input("Nao",                                  "[SAR] Inverter", options=["Sim", "Nao"]) =="Sim"
 iSARForma = input("Mudanca no sentido dos pontos do SAR", "[SAR] Forma de uso", options=["Mudanca no sentido dos pontos do SAR", "Sentido dos pontos do SAR"])
 iSARFA    = input(0.02,                                   "[SAR] Fator de aceleracao", minval=0.001, maxval=50, step = 0.001)
 iSARFI    = input(0.02,                                   "[SAR] Valor de incremento", minval=0.001, maxval=50, step = 0.001)
@@ -283,6 +290,9 @@ eADX() =>
 			r := 1
 		else if adxMinus > adxPlus
 			r := -1
+	if iADXInv
+        r := r == 1? -1: r == -1? 1: r
+
 	if adxLine < iADXMin or adxLine > iADXMax
 		r := 0
 	else if iADXTrend > 0 and (adxLine <= adxLine[1])
@@ -312,6 +322,9 @@ eEST() =>
 			r := 1
 		else if estK < estD
 			r := -1
+	if iESTInv
+	    r := r == 1? -1: r == -1? 1: r
+
 	if (r == 1 and estK > iESTMin) or (r == -1 and estK < iESTMax)
 		r := 0
 	r
@@ -338,6 +351,9 @@ eVWAP() =>
 			r := -1
 		else if close < vwap
 			r := 1
+	if iVWAPInv
+        r := r == 1? -1: r == -1? 1: r
+
 	r
 
 ifrEntrada = (iIFRModo == 1 or iIFRModo >= 3)
@@ -363,6 +379,8 @@ eIFR() =>
 			r := 1
 		else if ifr > iIFRMax
 			r := -1
+	if iIFRInv
+	    r := r == 1? -1: r == -1? 1: r
 	r
 
 bbEntrada = (iBBModo == 1 or iBBModo >= 3)
@@ -393,6 +411,8 @@ eBB() =>
 			r := 1
 		else if iBBSrc > bbUp
 			r := -1
+	if iBBInv
+	    r := r == 1? -1: r == -1? 1: r
 	r
 
 
@@ -424,6 +444,8 @@ eATR() =>
 			r := 1
 		else if close < atrStop
 			r := -1
+    if iATRInv
+	    r := r == 1? -1: r == -1? 1: r
 	r
 
 
@@ -449,6 +471,8 @@ eSAR() =>
 			r := 1
 		else if close < sarVal
 			r := -1
+    if iSARInv
+	    r := r == 1? -1: r == -1? 1: r
 	r
 
 
@@ -612,6 +636,7 @@ saidaCompra() =>
 	compra = strategy.position_size > 0
 	compra := compra and c != "" and c == cSaidas()
 	compra := compra and workTime //or (iSaidaAll? c == cSaidas(): c > 0)
+	compra := compra and barstate.isconfirmed
 	compra
 	  
 
@@ -631,6 +656,7 @@ saidaVenda() =>
 	venda = strategy.position_size < 0
 	venda := venda and c != "" and c == cSaidas()
 	venda := venda and workTime //or (iSaidaAll? c == cSaidas(): c > 0)
+	venda := venda and barstate.isconfirmed
 	venda
 
 // === MARTIGALE =========

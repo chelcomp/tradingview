@@ -1,12 +1,12 @@
 //@version=4
-strategy("Tangram Bot 2", "Parametros TANGRAM", true, pyramiding=0, calc_on_order_fills=false, calc_on_every_tick=true, backtest_fill_limits_assumption=5, default_qty_value=1, linktoseries=false, slippage=2, commission_type=strategy.commission.cash_per_contract, commission_value=5)
+strategy("Tangram Bot 2", "Parametros TANGRAM", true, pyramiding=0, calc_on_order_fills=false, calc_on_every_tick=true, backtest_fill_limits_assumption=5, default_qty_value=1, linktoseries=false, slippage=2, commission_type=strategy.commission.cash_per_contract, commission_value=3.5)
 // === GENERAL INPUTS ===
 
 
 // Indicadores Tecnicos
-iOPModo      = input(3, "[Estrategia] Sentido das operacoes: 0:Off 1:Comprado, 2:Vendido, 3:Ambos sem Reversao, 4:Ambos com Reversao", minval=0, maxval=4, step=1)
+iOPModo      = input(4, "[Estrategia] Sentido das operacoes: 0:Off 1:Comprado, 2:Vendido, 3:Ambos sem Reversao, 4:Ambos com Reversao", minval=0, maxval=4, step=1)
 //iPrevinir    = input(true, "[Estrategia] Prevenir entradas no mesmo sentido apos uma saida")
-iPrevinir    = input("Nao",  "[Estrategia] Habilitar bloqueio de nova entrada no mesmo dia apos uma saida", options=["Sim","Nao"])=="Sim"
+iPrevinir    = input("Sim",  "[Estrategia] Habilitar bloqueio de nova entrada no mesmo dia apos uma saida", options=["Sim","Nao"])=="Sim"
 
 dummyMM= input(false, "[Medias Moveis]-------------------------------------------------------------", type = input.bool )
 iMMModo      = input(3,                                   "[MM] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
@@ -25,10 +25,11 @@ iMMPlot      = input("Sim",                               "[MM] Plotar Indice no
 
 
 dummyHilo= input(false, "[HiLo Activator]----------------------------------------------------------", type = input.bool )
-iHLModo  = input(3,                                      "[HiLo] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
+iHLModo  = input(0,                                      "[HiLo] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
 iHLInv   = input("Nao",                                  "[HiLo] Inverter" , options=["Sim", "Nao"]) =="Sim"
 iHLForma = input("Sentido da escada do HiLo",            "[HiLo] Modo de Operacao", options=["Mudanca no sentido da escada do HiLo", "Sentido da escada do HiLo"])
-iHLLen   = input(11,                                      "[HiLo] Numero de periodos", minval=1, step=5)
+iHLLen   = input(11,                                     "[HiLo] Numero de periodos", minval=1, step=5)
+iHLDist  = input(1,                                      "[HiLo] Distancia", minval=0)
 iHLPlot  = input("Sim",                                  "[HiLo] Plotar Indice no Grafico", options=["Sim","Nao"]) == "Sim"
 
 
@@ -82,9 +83,9 @@ iIFRInv   = input("Nao",                                                    "[IF
 iIFRForma = input("IFR acima/abaixo dos níveis sobrecomprado/sobrevendido", "[IFR] Forma de uso", options=["Cruzamento do IFR com os níveis", "IFR acima/abaixo dos níveis sobrecomprado/sobrevendido"])
 iIFRSrc   = input(close,                                                    "[IFR] Valor usado")
 iIFRLen   = input(14,                                                       "[IFR] Numero de periodos", minval=1)
-iIFRMin   = input(20.0,                                                     "[IFR] Nível sobrevendido (inferior)", minval=0, maxval=100)
-iIFRMax   = input(80.0,                                                     "[IFR] Nível sobrecomprado (superior)", minval=0, maxval=100)
-iFRPPlot  = input("Sim",                                                    "[IFR] Plotar Indice no Grafico", options=["Sim","Nao"]) == "Sim"
+iIFRMin   = input(30.0,                                                     "[IFR] Nível sobrevendido (inferior)", minval=0, maxval=100)
+iIFRMax   = input(70.0,                                                     "[IFR] Nível sobrecomprado (superior)", minval=0, maxval=100)
+iIFRPlot  = input("Sim",                                                    "[IFR] Plotar Indice no Grafico", options=["Sim","Nao"]) == "Sim"
 
 
 dummyBB  = input(false, "[Bandas de Bollinger]-----------------------------------------------------", type = input.bool )
@@ -97,13 +98,13 @@ iBBDes   = input(2.0,                                 "[BB] Desvio", minval=0.00
 iBBPlot  = input("Sim",                               "[BB] Plotar Indice no Grafico", options=["Sim","Nao"]) == "Sim"
 
 
-dummyATR = input(false, "[Stop TR]-----------------------------------------------------------------", type = input.bool )
+dummyATR = input(false, "[Stop ATR]-----------------------------------------------------------------", type = input.bool )
 iATRModo  = input(0,                                "[ATR] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
 iATRInv   = input("Nao",                            "[ATR] Inverter", options=["Sim", "Nao"]) =="Sim"
 iATRForma = input("Mudanca no sentido do Stop ATR", "[ATR] Forma de uso", options=["Mudanca no sentido do Stop ATR", "Sentido do Stop ATR"])
 iATRTipo  = input("Exponencial",                    "[ATR] Tipo de media", options=["Simples", "Exponencial"] )
-iATRLen   = input(6,                                "[ATR] Numero de periodos", minval=1)
-iATRMult  = input(3.5,                              "[ATR] Desvio/Multiplicador", minval=0.001, maxval=50)
+iATRLen   = input(14,                                "[ATR] Numero de periodos", minval=1)
+iATRMult  = input(2,                              "[ATR] Desvio/Multiplicador", minval=0.001, maxval=50, step=0.1)
 iATRPlot  = input("Sim",                            "[ATR] Plotar Indice no Grafico", options=["Sim","Nao"]) == "Sim"
 
 
@@ -121,28 +122,28 @@ dummyRisk2  = input(false, "[Criterios de Saida]--------------------------------
 
 // === RISK MANAGEMENT VALUE PREP ===
 // if an input is less than 1, assuming not wanted so we assign 'na' value to disable it.
-//iSaidaAll     = input("Nao", "[Saida] Sair se todos os indicadores selecionados para saída sinalizarem", options=["Sim","Nao"])=="Sim"
+iSaidaAll     = input("Nao", "[Saida] Sair se todos os indicadores selecionados para saida sinalizarem", options=["Sim","Nao"])=="Sim"
 
 
 iEMartingale    = input(0,   "[Martingale] Dobrar posição na entrada seguinte a uma perda")
 
-iEStopFixo    = input(17.00,   "[Stop fixo de perda] Stop Loss (Pontos)")
+iEStopFixo    = input(0.00,   "[Stop fixo de perda] Stop Loss (Pontos)")
 iETakeFixo    = input(0.00,   "[Stop fixo de ganho] Stop Gain/Take Profit (Pontos)")
 iETSAtivar    = input(0.00,   "[Trailing Stop] Início/Ativacao (Pontos)")
 iETSDistancia = input(0.00,    "[Trailing Stop] Distância (Pontos)")
 
 iEParcialT    = input(0.0,   "[Realizacao parcial] Valor Execucao")
-iEParcialBE =   input("Nao", "[Realizacao parcial] Break-even: Posicionar stop fixo de perda no preco de entrada apos realizacao parcial", options=["Sim","Nao"]) == "Sim"
+iEParcialBE   = input("Nao", "[Realizacao parcial] Break-even: Posicionar stop fixo de perda no preco de entrada apos realizacao parcial", options=["Sim","Nao"]) == "Sim"
 
-dummyRisk4  = input(false, "-----------------------------------------------------------------------", type = input.bool )
-iSDPerda    = input(800.0, "[Saida Diario] Stop diario de perda (Valor absoluto financeiro (R$))", minval = 0, step = 100)
-iSDGanho    = input(100.0, "[Saida Diario] Stop diario de ganho (Valor absoluto financeiro (R$))", minval = 0 , step = 100)
-iSDXTrades  = input(999,   "[Saida Diario] Parar apos X trades no dia", minval = 1)
-iSDXTradesLost  = input(3, "[Saida Diario] Parar apos X trades Perdidas", minval = 1)
+dummyRisk4      = input(false, "-----------------------------------------------------------------------", type = input.bool )
+iSDPerda        = input(99999.0, "[Saida Diario] Stop diario de perda (Valor absoluto financeiro (R$))", minval = 0, step = 100)
+iSDGanho        = input(99999.0, "[Saida Diario] Stop diario de ganho (Valor absoluto financeiro (R$))", minval = 0 , step = 100)
+iSDXTrades      = input(99999,   "[Saida Diario] Parar apos X trades no dia", minval = 1)
+iSDXTradesLost  = input(99999,   "[Saida Diario] Parar apos X trades Perdidas", minval = 1)
 
 dummyRisk3  = input(false, "-----------------------------------------------------------------------", type = input.bool )
 // Work time and Order time restrictions.
-iTot   = input("0900-1200", "Horario inicial/final para abrir posicoes ", type=input.session)
+iTot   = input("0900-1201", "Horario inicial/final para abrir posicoes ", type=input.session)
 iJanela1 = input ("1800-1810", "Janela De bloqueio de operacoes 1", type=input.session)
 iJanela2 = input ("1800-1810", "Janela De bloqueio de operacoes 2", type=input.session)
 iTwt   = input("0900-1659", "Horario final para zerar carteira", type=input.session)
@@ -150,7 +151,7 @@ iTwt   = input("0900-1659", "Horario final para zerar carteira", type=input.sess
 
 dummyJanela  = input(false, "-----------------------------------------------------------------------", type = input.bool )
 iTtz   = syminfo.timezone // input("GMT-3", "What is the Time Zone")
-iTdate = input(20200101, " Data inicial para backtest: YYYYMMDD")
+iTdate = input(20200610, " Data inicial para backtest: YYYYMMDD")
 iTdias = input(365, "Dias apos a data inicial em backtest")
 
 
@@ -165,30 +166,34 @@ getNum(n, d) =>
     r = floor((n % pow(10, d)) / pow(10, d-1))
 
 // === ESTRATEGIAS ===
-mmEntrada = (iMMModo == 1 or iMMModo >= 3)
-mmSaida   = iMMModo > 1
-mmCurta   = 0.0
-mmLonga   = 0.0
-if iMMModo
-	mmCurta := iff(iMMCurtaTipo == "Simples", sma(iMMCurtaSrc[iMMCurtaDes], iMMCurtaLen), ema(iMMCurtaSrc[iMMCurtaDes], iMMCurtaLen))
-	mmLonga := iff(iMMLongaTipo == "Simples", sma(iMMLongaSrc[iMMLongaDes], iMMLongaLen), ema(iMMLongaSrc[iMMLongaDes], iMMLongaLen))
+var mmEntrada = (iMMModo == 1 or iMMModo >= 3)
+var mmSaida   = iMMModo > 1
+var mmCurta   = float(na)
+var mmLonga   = float(na)
+if iMMModo 
+	mmCurta := iMMCurtaTipo == "Simples"? sma(iMMCurtaSrc[iMMCurtaDes], iMMCurtaLen): ema(iMMCurtaSrc[iMMCurtaDes], iMMCurtaLen)
+	mmLonga := iMMLongaTipo == "Simples"? sma(iMMLongaSrc[iMMLongaDes], iMMLongaLen): ema(iMMLongaSrc[iMMLongaDes], iMMLongaLen)
+
 plot(iMMPlot and iMMModo ? mmCurta : na, "MM Curta", #90CAF9, 1, plot.style_line, 0, 15)
 plot(iMMPlot and iMMModo ? mmLonga : na, "MM Longa", #9575CD, 2, plot.style_line, 0, 15)
+
+
 
 eMM() =>
 	r = 0
 	if iMMModo == 0
 	    r := 0
 	else if iMMForma == "Cruzamento das Medias"
-		if crossover(mmCurta, mmLonga)
+		if mmCurta > mmLonga and mmCurta[1] <= mmLonga[1]
 			r := 1
-		else if crossunder(mmCurta, mmLonga)
+		else if mmCurta < mmLonga and mmCurta[1] >= mmLonga[1]
 			r := -1
 	else if iMMForma == "Media curta acima/abaixo da longa"
 		if mmCurta > mmLonga
 			r := 1
 		else if mmCurta < mmLonga
 			r := -1
+			
 	if iMMInv
 	    r := r == 1? -1: r == -1? 1: r
 	r
@@ -204,10 +209,9 @@ hlPlot    = float(na)
 hlColor   = color.white
 
 if iHLModo
-    displace = 1
 	hlHigh := sma(high, iHLLen)
 	hlLow  := sma(low, iHLLen)
-	hlSentido := close > hlHigh[displace]? 1: close < hlLow[displace]? -1: nz(hlSentido[1])
+	hlSentido := close > hlHigh[iHLDist]? 1: close < hlLow[iHLDist]? -1: nz(hlSentido[1])
 
 	hlH := highest(close, iHLLen)
 	hlL := lowest(close, iHLLen)
@@ -226,9 +230,9 @@ eHiLo() =>
 		else if hlSentido == -1
 			r := -1
 	else if iHLForma == "Mudanca no sentido da escada do HiLo"
-		if hlSentido == 1 and hlSentido[1] == -1
+		if crossover(close, hlHigh[iHLDist])//hlSentido == 1 and hlSentido[1] == -1
 			r := 1
-		else if hlSentido == -1 and hlSentido[1] == 1
+		else if crossunder(close, hlHigh[iHLDist]) //hlSentido == -1 and hlSentido[1] == 1
 			r := -1
 	if iHLInv
 	    r := r == 1? -1: r == -1? 1: r
@@ -245,8 +249,8 @@ if iMACDModo
     ema_3 = ema(macdLine, iMACDSinal)
     signalLine := macdTipo ? sma_3 : ema_3
 
-plot(iMACDPlot ? macdLine + strategy.position_avg_price: na,"Linha MACD",color.blue)
-plot(iMACDPlot ? signalLine + strategy.position_avg_price: na,"Sinal MACD",color.red)
+plot(iMACDPlot ? macdLine + close: na,"Linha MACD",color.blue)
+plot(iMACDPlot ? signalLine + close: na,"Sinal MACD",color.red)
 
 eMACD() =>
 	r = 0
@@ -300,7 +304,6 @@ plot(iADXPlot ? adxPlus : na,"DI+", color.blue)
 plot(iADXPlot ? adxMinus : na,"DI-", color.orange)
 plot(iADXPlot ? adxLine : na,"ADX", color.red)
 
-
 eADX() =>
 	r = 0
 	if iADXModo == 0
@@ -334,29 +337,27 @@ if iESTModo
 	estK := sma(stoch(close, high, low, iESTLen), iESTSuavK)
 	estD := sma(estK, iESTSuavD)
 
-	
-plot(iESTPlot ? estK + strategy.position_avg_price : na,"K%", color.blue)
-plot(iESTPlot ? estD + strategy.position_avg_price : na,"D%", color.orange)
+plot(iESTPlot ? estK + close : na,"K%", color.blue)
+plot(iESTPlot ? estD + close : na,"D%", color.orange)
 
 eEST() =>
 	r = 0
 	if iESTModo == 0
 	    r := 0
 	else if iESTForma == "Cruzamento da linha %K suavizada com a linha %D suavizada"
-		if crossover(estK, estD)
+		if crossover(estK, estD) // estK > estD and estK[1] <= estD[1] 
 			r := 1
-		else if crossunder(estK, estD)
+		else if  crossunder(estK, estD) //estK < estD and estK[1] >= estD[1]
 			r := -1
 	else if iESTForma == "Linha %K suavizada acima/abaixo da linha %D suavizada"
 		if estK > estD
 			r := 1
 		else if estK < estD
 			r := -1
+	if (iESTMin > 0 and r == 1 and estK > iESTMin) or (iESTMax < 100 and r == -1 and estK < iESTMax)
+		r := 0
 	if iESTInv
 	    r := r == 1? -1: r == -1? 1: r
-
-	if (r == 1 and estK > iESTMin) or (r == -1 and estK < iESTMax)
-		r := 0
 	r
 
 vwEntrada = (iVWAPModo == 1 or iVWAPModo >= 3)
@@ -396,6 +397,11 @@ if iIFRModo
 	ifrUp   := rma(max(change(iIFRSrc), 0), iIFRLen)
 	ifrDown := rma(-min(change(iIFRSrc), 0), iIFRLen)
 	ifr     := ifrDown == 0 ? 100 : ifrUp == 0 ? 0 : 100 - (100 / (1 + ifrUp / ifrDown))
+	
+plot(iIFRModo and iIFRPlot ? vwap + iIFRMax   : na,"IFR UP", color.green)
+plot(iIFRModo and iIFRPlot ? vwap - iIFRMin : na,"IFR DOWN", color.green)
+plot(iIFRModo and iIFRPlot ? ifr + vwap : na,"IFR", color.blue)
+
 eIFR() =>
 	r = 0
 	if iIFRModo == 0
@@ -459,9 +465,9 @@ atrColor = color.black
 if iATRModo
 	atrX     := atr(iATRLen)
 	atrLoss  := iATRMult * atrX
-	atrStop  := iff(close > nz(atrStop[1], 0) and close[1] > nz(atrStop[1], 0), max(nz(atrStop[1]), close - atrLoss), iff(close < nz(atrStop[1], 0) and close[1] < nz(atrStop[1], 0), min(nz(atrStop[1]), close + atrLoss), iff(close > nz(atrStop[1], 0), close - atrLoss, close + atrLoss)))
-	atrPos   := iff(close[1] < nz(atrStop[1], 0) and close > nz(atrStop[1], 0), 1, iff(close[1] > nz(atrStop[1], 0) and close < nz(atrStop[1], 0), -1, nz(atrPos[1], 0)))
-	atrColor := atrPos == -1 ? color.red: atrPos == 1 ? color.green : color.blue 
+	atrStop  := iff(open > nz(atrStop[1], 0) and open[1] > nz(atrStop[1], 0), max(nz(atrStop[1]), open - atrLoss), iff(open < nz(atrStop[1], 0) and open[1] < nz(atrStop[1], 0), min(nz(atrStop[1]), open + atrLoss), iff(open > nz(atrStop[1], 0), open - atrLoss, open + atrLoss)))
+	atrPos   := iff(open[1] < nz(atrStop[1], 0) and open > nz(atrStop[1], 0), 1, iff(open[1] > nz(atrStop[1], 0) and open < nz(atrStop[1], 0), -1, nz(atrPos[1], 0)))
+	atrColor := atrPos == -1 ? color.red: atrPos == 1 ? color.blue : color.green
 	
 plot(iATRPlot and iATRModo? atrStop: na, "Stop ATR", atrColor, 1, plot.style_line, 0, 15) 
 
@@ -564,7 +570,8 @@ orderTime := orderTime and not dayStop
 orderTime := orderTime and inRangeToProcesBt 
 orderTime := orderTime and not wjan1 and not wjan2
 
-workTime  = time(timeframe.period, iTwt)
+bool workTime  = time(timeframe.period, iTwt)
+workTime := workTime and not dayStop
 
 // bgcolor(workTime ? na: #FFFFFF, transp=80)
 bgcolor(orderTime? color.white: workTime ? color.yellow: color.orange, transp=80)
@@ -590,51 +597,50 @@ eParc = iEParcialT    > 0   ? iEParcialT    / minTick: na
 
 
 cEntradas() =>
-	c = ""
-	c := mmEntrada   ? c + "A" : c
-	c := hlEntrada   ? c + "B" : c
-	c := macdEntrada ? c + "C" : c
-	c := adxEntrada  ? c + "D" : c
-	c := estEntrada  ? c + "E" : c
-	c := vwEntrada   ? c + "F" : c
-	c := ifrEntrada  ? c + "G" : c
-	c := bbEntrada   ? c + "H" : c
-	c := atrEntrada  ? c + "I" : c
-	c := sarEntrada  ? c + "J" : c
-	c
+	ce = ""
+	ce := ce + (mmEntrada   ? "A" : na)
+	ce := ce + (hlEntrada   ? "B" : na)
+	ce := ce + (macdEntrada ? "C" : na)
+	ce := ce + (adxEntrada  ? "D" : na)
+	ce := ce + (estEntrada  ? "E" : na)
+	ce := ce + (vwEntrada   ? "F" : na)
+	ce := ce + (ifrEntrada  ? "G" : na)
+	ce := ce + (bbEntrada   ? "H" : na)
+	ce := ce + (atrEntrada  ? "I" : na)
+	ce := ce + (sarEntrada  ? "J" : na)
+	ce
 
 cSaidas() =>
-	c = ""
-	c := mmSaida   ? c + "A" : c
-	c := hlSaida   ? c + "B" : c
-	c := macdSaida ? c + "C" : c
-	c := adxSaida  ? c + "D" : c
-	c := estSaida  ? c + "E" : c
-	c := vwSaida   ? c + "F" : c
-	c := ifrSaida  ? c + "G" : c
-	c := bbSaida   ? c + "H" : c
-	c := atrSaida  ? c + "I" : c
-	c := sarSaida  ? c + "J" : c
-	c
+	cs = ""
+	cs := cs + (mmSaida   ? "A" : na)
+	cs := cs + (hlSaida   ? "B" : na)
+	cs := cs + (macdSaida ? "C" : na)
+	cs := cs + (adxSaida  ? "D" : na)
+	cs := cs + (estSaida  ? "E" : na)
+	cs := cs + (vwSaida   ? "F" : na)
+	cs := cs + (ifrSaida  ? "G" : na)
+	cs := cs + (bbSaida   ? "H" : na)
+	cs := cs + (atrSaida  ? "I" : na)
+	cs := cs + (sarSaida  ? "J" : na)
+	cs
 	
 //long
-c = ""
-c := mmEntrada   and eMM()   > 0? c + "A": c
-c := hlEntrada   and eHiLo() > 0? c + "B": c
-c := macdEntrada and eMACD() > 0? c + "C": c
-c := adxEntrada  and eADX()  > 0? c + "D": c
-c := estEntrada  and eEST()  > 0? c + "E": c
-c := vwEntrada   and eVWAP() > 0? c + "F": c
-c := ifrEntrada  and eIFR()  > 0? c + "G": c
-c := bbEntrada   and eBB()   > 0? c + "H": c
-c := atrEntrada  and eATR()  > 0? c + "I": c
-c := sarEntrada  and eSAR()  > 0? c + "J": c
+c =      (mmEntrada   and eMM()   > 0? "A": na)
+c := c + (hlEntrada   and eHiLo() > 0? "B": na)
+c := c + (macdEntrada and eMACD() > 0? "C": na)
+c := c + (adxEntrada  and eADX()  > 0? "D": na)
+c := c + (estEntrada  and eEST()  > 0? "E": na)
+c := c + (vwEntrada   and eVWAP() > 0? "F": na)
+c := c + (ifrEntrada  and eIFR()  > 0? "G": na)
+c := c + (bbEntrada   and eBB()   > 0? "H": na)
+c := c + (atrEntrada  and eATR()  > 0? "I": na)
+c := c + (sarEntrada  and eSAR()  > 0? "J": na)
 indicadoresCompra = c
 
 entradaCompra() =>
-	compra = indicadoresCompra != "" and indicadoresCompra == cEntradas()
+	compra = indicadoresCompra != na and indicadoresCompra == cEntradas()
     //compra := compra and not (iPrevinir and indicadoresCompra[1] == indicadoresCompra)
-	compra := compra and not dayStop and orderTime
+	compra := compra and orderTime
 	compra := compra and barstate.isconfirmed 
 	compra := compra and ((iOPModo == 4 and strategy.position_size <= 0) or ((iOPModo == 3 or iOPModo == 1) and strategy.position_size == 0))
 	compra := compra and (not iPrevinir or indicadoresCompra[1] != indicadoresCompra or intradayFilledOrder == 0)
@@ -642,23 +648,21 @@ entradaCompra() =>
 
 	
 //short
-c := ""
-c := mmEntrada   and eMM()   < 0? c + "A": c
-c := hlEntrada   and eHiLo() < 0? c + "B": c
-c := macdEntrada and eMACD() < 0? c + "C": c
-c := adxEntrada  and eADX()  < 0? c + "D": c
-c := estEntrada  and eEST()  < 0? c + "E": c
-c := vwEntrada   and eVWAP() < 0? c + "F": c
-c := ifrEntrada  and eIFR()  < 0? c + "G": c
-c := bbEntrada   and eBB()   < 0? c + "H": c
-c := atrEntrada  and eATR()  < 0? c + "I": c
-c := sarEntrada  and eSAR()  < 0? c + "J": c
-indicadoresVenda = c
+v =      (mmEntrada   and eMM()   < 0? "A": na)
+v := v + (hlEntrada   and eHiLo() < 0? "B": na)
+v := v + (macdEntrada and eMACD() < 0? "C": na)
+v := v + (adxEntrada  and eADX()  < 0? "D": na)
+v := v + (estEntrada  and eEST()  < 0? "E": na)
+v := v + (vwEntrada   and eVWAP() < 0? "F": na)
+v := v + (ifrEntrada  and eIFR()  < 0? "G": na)
+v := v + (bbEntrada   and eBB()   < 0? "H": na)
+v := v + (atrEntrada  and eATR()  < 0? "I": na)
+v := v + (sarEntrada  and eSAR()  < 0? "J": na)
+indicadoresVenda = v
 
 entradaVenda() =>
-	venda = indicadoresVenda != "" and indicadoresVenda == cEntradas()
-    //venda := venda and not (iPrevinir and indicadoresVenda[1] == indicadoresVenda)
-	venda := venda and not dayStop and orderTime
+	venda = indicadoresVenda != na and indicadoresVenda == cEntradas()
+	venda := venda and orderTime
 	venda := venda and barstate.isconfirmed
 	venda := venda and ((iOPModo == 4 and strategy.position_size >= 0) or ((iOPModo == 2 or iOPModo == 3) and strategy.position_size == 0))
     venda := venda and (not iPrevinir or indicadoresVenda[1] != indicadoresVenda or intradayFilledOrder == 0)
@@ -666,41 +670,42 @@ entradaVenda() =>
 
 //long
 saidaCompra() =>
-	c = ""
-	c := mmSaida   and eMM()   < 0? c + "A": c
-	c := hlSaida   and eHiLo() < 0? c + "B": c
-	c := macdSaida and eMACD() < 0? c + "C": c
-	c := adxSaida  and eADX()  < 0? c + "D": c
-	c := estSaida  and eEST()  < 0? c + "E": c
-	c := vwSaida   and eVWAP() < 0? c + "F": c
-	c := ifrSaida  and eIFR()  < 0? c + "G": c
-	c := bbSaida   and eBB()   < 0? c + "H": c
-	c := atrSaida  and eATR()  < 0? c + "I": c
-	c := sarSaida  and eSAR()  < 0? c + "J": c
+	sc = (mmSaida   and eMM()   < 0? "A": "") 
+	sc := sc + (hlSaida   and eHiLo() < 0? "B": "")
+	sc := sc + (macdSaida and eMACD() < 0? "C": "")
+	sc := sc + (adxSaida  and eADX()  < 0? "D": "")
+	sc := sc + (estSaida  and eEST()  < 0? "E": "")
+	sc := sc + (vwSaida   and eVWAP() < 0? "F": "")
+	sc := sc + (ifrSaida  and eIFR()  < 0? "G": "")
+	sc := sc + (bbSaida   and eBB()   < 0? "H": "")
+	sc := sc + (atrSaida  and eATR()  < 0? "I": "")
+	sc := sc + (sarSaida  and eSAR()  < 0? "J": "")
 	compra = strategy.position_size > 0
-	compra := compra and c != "" and c == cSaidas()
-	compra := compra and workTime //or (iSaidaAll? c == cSaidas(): c > 0)
+	compra := compra and sc != na
+	compra := compra and (not iSaidaAll or sc == cSaidas()) 
 	compra := compra and barstate.isconfirmed
 	compra
-	  
+	
+	
+
 
 // short
 saidaVenda() =>
-	c = ""
-	c := mmSaida   and eMM()   > 0? c + "A": c
-	c := hlSaida   and eHiLo() > 0? c + "B": c
-	c := macdSaida and eMACD() > 0? c + "C": c
-	c := adxSaida  and eADX()  > 0? c + "D": c
-	c := estSaida  and eEST()  > 0? c + "E": c
-	c := vwSaida   and eVWAP() > 0? c + "F": c
-	c := ifrSaida  and eIFR()  > 0? c + "G": c
-	c := bbSaida   and eBB()   > 0? c + "H": c
-	c := atrSaida  and eATR()  > 0? c + "I": c
-	c := sarSaida  and eSAR()  > 0? c + "J": c
+	sv =      (mmSaida   and eMM()   > 0? "A": na) 
+	sv := sv + (hlSaida   and eHiLo() > 0? "B":na)
+	sv := sv + (macdSaida and eMACD() > 0? "C":na)
+	sv := sv + (adxSaida  and eADX()  > 0? "D":na)
+	sv := sv + (estSaida  and eEST()  > 0? "E":na)
+	sv := sv + (vwSaida   and eVWAP() > 0? "F":na)
+	sv := sv + (ifrSaida  and eIFR()  > 0? "G":na)
+	sv := sv + (bbSaida   and eBB()   > 0? "H":na)
+	sv := sv + (atrSaida  and eATR()  > 0? "I":na)
+	sv := sv + (sarSaida  and eSAR()  > 0? "J":na)
 	venda = strategy.position_size < 0
-	venda := venda and c != "" and c == cSaidas()
+	venda := venda and sv != na 
 	venda := venda and workTime //or (iSaidaAll? c == cSaidas(): c > 0)
 	venda := venda and barstate.isconfirmed
+	venda := venda and (not iSaidaAll or sv == cSaidas()) 
 	venda
 
 // === MARTIGALE =========
@@ -730,18 +735,18 @@ if iEMartingale > 0
 // === STRATEGY ===
 openProfit = "$ " + tostring (strategy.openprofit)
 
-if strategy.position_size == 0
-    ordersToBuy = initialOrderAmount * martigaleOrderMultiplier
-    strategy.entry("Compra", strategy.long, qty=ordersToBuy, when=entradaCompra(), comment = "EC")
-    strategy.entry("Venda", strategy.short, qty=ordersToBuy, when=entradaVenda(), comment = "EV")
+if(entradaCompra() or entradaVenda())
+    if strategy.position_size == 0
+        ordersToBuy = initialOrderAmount * martigaleOrderMultiplier
+        strategy.entry("Compra", strategy.long, qty=ordersToBuy, when=entradaCompra(), comment = "EC")
+        strategy.entry("Venda", strategy.short, qty=ordersToBuy, when=entradaVenda(), comment = "EV")
+    else
+        ordersToRevert = initialOrderAmount * 1 + (initialOrderAmount * martigaleOrderMultiplier)
+        strategy.order("Compra", strategy.long, qty=ordersToRevert, when=entradaCompra(), comment = "RC " + openProfit)
+        strategy.order("Venda", strategy.short, qty=ordersToRevert, when=entradaVenda(), comment =  "RV " + openProfit)
 else
-    ordersToRevert = initialOrderAmount * 1 + (initialOrderAmount * martigaleOrderMultiplier)
-    strategy.order("Compra", strategy.long, qty=ordersToRevert, when=entradaCompra(), comment = "RC " + openProfit)
-    strategy.order("Venda", strategy.short, qty=ordersToRevert, when=entradaVenda(), comment =  "RV " + openProfit)
-
-
-strategy.close("Compra", when=saidaCompra(), comment = "SC " + openProfit)
-strategy.close("Venda", when=saidaVenda(), comment = "SV " + openProfit)
+    strategy.close("Compra", when=saidaCompra(), comment = "SC " + openProfit)
+    strategy.close("Venda", when=saidaVenda(), comment = "SV " + openProfit)
 
 ninTakeNotZero() =>
     r = nz(eParc)
@@ -753,13 +758,13 @@ ninTakeNotZero() =>
 
 if strategy.position_size != 0 
     t = ninTakeNotZero()
-    if eParc == t and abs(strategy.position_size) >= initialOrderAmount 
+    if eParc > 0 and eParc == t and abs(strategy.position_size) >= initialOrderAmount 
         strategy.exit("SaidaParcial", qty_percent=50, profit=eParc, trail_points=eTS, trail_offset=eTSD, loss=eStop, comment = "Saida Take Parcial")
-
+    
     l = iEParcialBE and nz(eParc) > 0? eParc: eStop 
     strategy.exit("Saida", profit=eTake, trail_points=eTS, trail_offset=eTSD, loss=l, comment = "Saida Take/Loss")
-
-    getOut = (not workTime or dayStop) and strategy.position_size != 0
+    
+    getOut = not workTime and strategy.position_size != 0
     
     strategy.cancel_all(getOut)
     strategy.close_all(getOut, comment = "Close ALL")

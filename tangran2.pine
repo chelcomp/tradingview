@@ -530,13 +530,11 @@ var intradayFilledOrderLastDay = 0
 var intradayFilledOrder = 0
 var intradayLostdOrderLastDay = 0
 var intradayLostOrder = 0
-var yesterday = 0.0
 
-if yesterday != dayofmonth
-    yesterday := dayofmonth
-	netProfit := strategy.netprofit
-	intradayFilledOrderLastDay := strategy.closedtrades
-	intradayLostdOrderLastDay := strategy.losstrades
+if dayofmonth[1] != dayofmonth
+	netProfit := strategy.netprofit[1]
+	intradayFilledOrderLastDay := strategy.closedtrades[1]
+	intradayLostdOrderLastDay := strategy.losstrades[1]
 	intradayFilledOrder := 0
 	intradayLostOrder := 0
 
@@ -750,6 +748,9 @@ else
     strategy.close("Compra", when=saidaCompra(), comment = "SC " + openProfit)
     strategy.close("Venda", when=saidaVenda(), comment = "SV " + openProfit)
 
+minNonZero(v1, v2)=>
+    nz(v1)>0 and nz(v2)>0? min(v1, v2) :max(v1, v2)
+    
 ninTakeNotZero() =>
     r = nz(eParc)
     if nz(eParc)>0 and nz(eTake)>0
@@ -759,15 +760,20 @@ ninTakeNotZero() =>
     r
 
 //if strategy.position_size != 0 
-t = ninTakeNotZero()
+t = minNonZero(eParc, eTake) // ninTakeNotZero()
 if eParc > 0 and eParc == t and abs(strategy.position_size) >= initialOrderAmount 
     strategy.exit("SaidaParcial", qty_percent=50, profit=eParc, trail_points=eTS, trail_offset=eTSD, loss=eStop, comment = "Saida Take Parcial")
 
-l = iEParcialBE and nz(eParc) > 0? eParc: eStop 
-strategy.exit("Saida", profit=eTake, trail_points=eTS, trail_offset=eTSD, loss=l, comment = "Saida Take/Loss")
+tradeLoss = eStop==0 and iEParcialBE? eParc: eStop
+globalLoss = (strategy.netprofit - netProfit + iSDPerda) / syminfo.pointvalue / minTick
+
+if tradeLoss < globalLoss
+    strategy.exit("SaidaTrade", profit=eTake, trail_points=eTS, trail_offset=eTSD, loss=tradeLoss, comment = "Saida Take/Loss "+ tostring(eTake) + "/" + tostring(tradeLoss))
+else
+    strategy.exit("SaidaGlobal", profit=eTake, trail_points=eTS, trail_offset=eTSD, loss=globalLoss, comment = "Saida Take/GlobalLoss "+ tostring(eTake) + "/" + tostring(globalLoss))
+
 
 getOut = not workTime and strategy.position_size != 0
-
 strategy.cancel_all(getOut)
 strategy.close_all(getOut, comment = "Close ALL")
 

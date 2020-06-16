@@ -255,7 +255,7 @@ if iMACDModo
 
 plot(iMACDPlot ? daily_open - macdLine:   na, "Linha MACD", color.blue)
 plot(iMACDPlot ? daily_open - signalLine: na, "Sinal MACD", color.red)
-plot(iMACDPlot and cross(macdLine, signalLine)? daily_open - avg(macdLine, signalLine): na, "MACD cross", style=plot.style_cross, color=color.black, linewidth=3)
+plot(iMACDPlot and cross(macdLine, signalLine)? daily_open - avg(macdLine, signalLine): na, "MACD CRoss", color.black, 2, plot.style_cross, 0, 15)
 
 eMACD() =>
 	r = 0

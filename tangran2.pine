@@ -180,7 +180,7 @@ if iMMModo
 
 plot(iMMPlot and iMMModo ? mmCurta : na, "MM Curta", #90CAF9, 1, plot.style_line, 0, 15)
 plot(iMMPlot and iMMModo ? mmLonga : na, "MM Longa", #9575CD, 2, plot.style_line, 0, 15)
-plot(iMMPlot and cross(iMMModo, mmLonga)? avg(mmCurta, mmLonga): na, "MM CRoss", color.black, 2, plot.style_cross, 0, 15)
+plot(iMMPlot and iMMModo and cross(mmCurta, mmLonga)? avg(mmCurta, mmLonga): na, "MM CRoss", color.black, 2, plot.style_cross, 0, 15)
 
 
 eMM() =>

@@ -10,15 +10,15 @@ iOPModo      = input(4, "[Estrategia] Sentido das operacoes: 0:Off 1:Comprado, 2
 iPrevinir    = input("Sim",  "[Estrategia] Habilitar bloqueio de nova entrada no mesmo dia apos uma saida", options=["Sim","Nao"])=="Sim"
 
 dummyMM= input(false, "[Medias Moveis]-------------------------------------------------------------", type = input.bool )
-iMMModo      = input(0,                                   "[MM] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
+iMMModo      = input(3,                                   "[MM] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
 iMMInv       = input("Nao",                               "[MM] Inverter", options=["Sim", "Nao"]) =="Sim"
 iMMForma     = input("Media curta acima/abaixo da longa", "[MM] Forma de uso", options=["Cruzamento das Medias", "Media curta acima/abaixo da longa"])
 iMMCurtaTipo = input("Exponencial",                       "[MM] Media Curta: Tipo", options=["Simples", "Exponencial"] )
-iMMCurtaLen  = input(5,                                   "[MM] Media curta: Numero de periodos", minval=1)
+iMMCurtaLen  = input(15,                                   "[MM] Media curta: Numero de periodos", minval=1)
 iMMCurtaDes  = input(0,                                   "[MM] Media Curta: Deslocamento", minval=0)
 iMMCurtaSrc  = input(close,                               "[MM] Media Curta: Fonte")
-iMMLongaTipo = input("Simples",                           "[MM] Media Longa: Tipo", options=["Simples", "Exponencial"])
-iMMLongaLen  = input(40,                                  "[MM] Media longa: Numero de periodos", minval=1)
+iMMLongaTipo = input("Exponencial",                           "[MM] Media Longa: Tipo", options=["Simples", "Exponencial"])
+iMMLongaLen  = input(21,                                  "[MM] Media longa: Numero de periodos", minval=1)
 iMMLongaDes  = input(0,                                   "[MM] Media Longa: Deslocamento", minval=0)
 iMMLongaSrc  = input(close,                               "[MM] Media Longa: Fonte")
 iMMPlot      = input("Sim",                               "[MM] Plotar Indice no Grafico", options=["Sim","Nao"]) == "Sim"
@@ -152,7 +152,7 @@ iTwt     = input("0900-1659", "Horario final para zerar carteira", type=input.se
 
 dummyJanela  = input(false, "-----------------------------------------------------------------------", type = input.bool )
 iTtz   = syminfo.timezone // input("GMT-3", "What is the Time Zone")
-iTdate = input(20200110, " Data inicial para backtest: YYYYMMDD")
+iTdate = input(20200616, " Data inicial para backtest: YYYYMMDD")
 iTdias = input(365, "Dias apos a data inicial em backtest")
 
 
@@ -180,7 +180,7 @@ if iMMModo
 
 plot(iMMPlot and iMMModo ? mmCurta : na, "MM Curta", #90CAF9, 1, plot.style_line, 0, 15)
 plot(iMMPlot and iMMModo ? mmLonga : na, "MM Longa", #9575CD, 2, plot.style_line, 0, 15)
-
+plot(iMMPlot and cross(iMMModo, mmLonga)? avg(mmCurta, mmLonga): na, "MM CRoss", color.black, 2, plot.style_cross, 0, 15)
 
 
 eMM() =>
@@ -188,14 +188,14 @@ eMM() =>
 	if iMMModo == 0
 	    r := 0
 	else if iMMForma == "Cruzamento das Medias"
-		if mmCurta > mmLonga and mmCurta[1] <= mmLonga[1]
+		if  crossover(mmCurta, mmLonga)//mmCurta >= mmLonga and mmCurta[1] < mmLonga[1]
 			r := 1
-		else if mmCurta < mmLonga and mmCurta[1] >= mmLonga[1]
+		else if crossunder(mmCurta, mmLonga)//mmCurta <= mmLonga and mmCurta[1] > mmLonga[1]
 			r := -1
 	else if iMMForma == "Media curta acima/abaixo da longa"
-		if mmCurta > mmLonga
+		if mmCurta >= mmLonga
 			r := 1
-		else if mmCurta < mmLonga
+		else if mmCurta <= mmLonga
 			r := -1
 			
 	if iMMInv
@@ -244,7 +244,7 @@ eHiLo() =>
 
 macdEntrada = (iMACDModo == 1 or iMACDModo >= 3)
 macdSaida   = iMACDModo > 1
-var macdTipo = iMACDTipo == "Simples" ? true : false
+var macdTipo = iMACDTipo == "Simples" 
 var macdLine = float(na)
 var signalLine = float(na)
 if iMACDModo
@@ -255,20 +255,21 @@ if iMACDModo
 
 plot(iMACDPlot ? daily_open - macdLine:   na, "Linha MACD", color.blue)
 plot(iMACDPlot ? daily_open - signalLine: na, "Sinal MACD", color.red)
+plot(iMACDPlot and cross(macdLine, signalLine)? daily_open - avg(macdLine, signalLine): na, "MACD cross", style=plot.style_cross, color=color.black, linewidth=3)
 
 eMACD() =>
 	r = 0
 	if iMACDModo == 0
 	    r := 0
 	else if iMACDForma == "Cruzamento da linha MACD com a linha de sinal"
-		if macdLine > signalLine and macdLine[1] <= signalLine[1] 
+		if crossover(signalLine, macdLine)//macdLine > signalLine and macdLine[1] <= signalLine[1] 
 			r :=  1
-		else if macdLine < signalLine and macdLine[1] >= signalLine[1] 
+		else if crossunder(signalLine, macdLine) //macdLine < signalLine and macdLine[1] >= signalLine[1] 
 			r := -1
 	else if iMACDForma == "Linha MACD acima/abaixo da linha de sinal"
-		if macdLine > signalLine
+		if signalLine >= macdLine 
 			r := 1
-		else if macdLine < signalLine
+		else if signalLine <= macdLine
 			r := -1
 	
 	if iMACDInv
@@ -438,9 +439,9 @@ if iBBModo
 	bbUp     := bbBase + bbDesvio
 	bbDown   := bbBase - bbDesvio
 	
-plot(iBBPlot and iBBModo? bbBase: na, "BB Media base", #fb8c00, 1, plot.style_circles, 0, 15)
-plot(iBBPlot and iBBModo? bbUp: na, "BB Up Line", #fb8c00, 1, plot.style_line, 0, 15)
-plot(iBBPlot and iBBModo? bbDown: na, "BB Bottom Line", #fb8c00, 1, plot.style_line, 0, 15)
+plot(iBBPlot and iBBModo? bbBase: na, "BB Media base" , #fb8c00, 1, plot.style_circles, 0, 15)
+plot(iBBPlot and iBBModo? bbUp  : na, "BB Up Line"    , #fb8c00, 1, plot.style_line   , 0, 15)
+plot(iBBPlot and iBBModo? bbDown: na, "BB Bottom Line", #fb8c00, 1, plot.style_line   , 0, 15)
 
 eBB() =>
 	r = 0
@@ -632,7 +633,7 @@ cSaidas() =>
 c =      (mmEntrada   and eMM()   > 0? "A": na)
 c := c + (hlEntrada   and eHiLo() > 0? "B": na)
 c := c + (macdEntrada and eMACD() > 0? "C": na)
-c := c + (adxEntrada  and eADX() > 0 and eADXLine() > 0? "D": na)
+c := c + (adxEntrada  and eADX()  > 0 and eADXLine() > 0? "D": na)
 c := c + (estEntrada  and eEST()  > 0? "E": na)
 c := c + (vwEntrada   and eVWAP() > 0? "F": na)
 c := c + (ifrEntrada  and eIFR()  > 0? "G": na)
@@ -645,7 +646,7 @@ entradaCompra() =>
 	compra = indicadoresCompra != na and indicadoresCompra == cEntradas()
     //compra := compra and not (iPrevinir and indicadoresCompra[1] == indicadoresCompra)
 	compra := compra and orderTime
-	compra := compra and barstate.isconfirmed 
+	//compra := compra and barstate.isconfirmed 
 	compra := compra and ((iOPModo == 4 and strategy.position_size <= 0) or ((iOPModo == 3 or iOPModo == 1) and strategy.position_size == 0))
 	compra := compra and (not iPrevinir or indicadoresCompra[1] != indicadoresCompra or intradayFilledOrder == 0)
 	compra
@@ -674,7 +675,7 @@ entradaVenda() =>
 
 //long
 saidaCompra() =>
-	sc = (mmSaida   and eMM()   < 0? "A": "") 
+	sc =       (mmSaida   and eMM()   < 0? "A": "") 
 	sc := sc + (hlSaida   and eHiLo() < 0? "B": "")
 	sc := sc + (macdSaida and eMACD() < 0? "C": "")
 	sc := sc + (adxSaida  and eADX()  < 0? "D": "")
@@ -687,7 +688,7 @@ saidaCompra() =>
 	compra = strategy.position_size > 0
 	compra := compra and sc != na
 	compra := compra and (not iSaidaAll or sc == cSaidas()) 
-	compra := compra and barstate.isconfirmed
+	//compra := compra and barstate.isconfirmed
 	compra
 	
 

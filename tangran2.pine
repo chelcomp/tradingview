@@ -10,7 +10,7 @@ iOPModo      = input(4, "[Estrategia] Sentido das operacoes: 0:Off 1:Comprado, 2
 iPrevinir    = input("Sim",  "[Estrategia] Habilitar bloqueio de nova entrada no mesmo dia apos uma saida", options=["Sim","Nao"])=="Sim"
 
 dummyMM= input(false, "[Medias Moveis]-------------------------------------------------------------", type = input.bool )
-iMMModo      = input(3,                                   "[MM] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
+iMMModo      = input(0,                                   "[MM] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
 iMMInv       = input("Nao",                               "[MM] Inverter", options=["Sim", "Nao"]) =="Sim"
 iMMForma     = input("Media curta acima/abaixo da longa", "[MM] Forma de uso", options=["Cruzamento das Medias", "Media curta acima/abaixo da longa"])
 iMMCurtaTipo = input("Exponencial",                       "[MM] Media Curta: Tipo", options=["Simples", "Exponencial"] )
@@ -26,7 +26,7 @@ iMMPlot      = input("Sim",                               "[MM] Plotar Indice no
 
 
 dummyHilo= input(false, "[HiLo Activator]----------------------------------------------------------", type = input.bool )
-iHLModo  = input(3,                                      "[HiLo] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
+iHLModo  = input(0,                                      "[HiLo] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
 iHLInv   = input("Nao",                                  "[HiLo] Inverter" , options=["Sim", "Nao"]) =="Sim"
 iHLForma = input("Sentido da escada do HiLo",            "[HiLo] Modo de Operacao", options=["Mudanca no sentido da escada do HiLo", "Sentido da escada do HiLo"])
 iHLLen   = input(11,                                     "[HiLo] Numero de periodos", minval=1, step=5)
@@ -35,13 +35,13 @@ iHLPlot  = input("Sim",                                  "[HiLo] Plotar Indice n
 
 
 dummyMACD= input(false, "[MACD]-------------------------------------------------------------------", type = input.bool )
-iMACDModo   = input(0,                                               "[MACD] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
+iMACDModo   = input(3,                                               "[MACD] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
 iMACDInv    = input("Nao",                                           "[MACD] Inverter" , options=["Sim", "Nao"]) =="Sim"
 iMACDForma  = input("Cruzamento da linha MACD com a linha de sinal", "[MACD] Modo de Operacao", options=["Cruzamento da linha MACD com a linha de sinal", "Linha MACD acima/abaixo da linha de sinal"])
 iMACDSrc    = input(close,                                           "[MACD] Valor usado")
 iMACDTipo   = input("Exponencial",                                   "[MACD] Tipo de media", options=["Simples","Exponencial"])
-iMACDCurta  = input(12,                                              "[MACD] Media curta: Numero de periodos", minval=1)
-iMACDLonga  = input(26,                                              "[MACD] Media longa: Numero de periodos", minval=2)
+iMACDCurta  = input(13,                                              "[MACD] Media curta: Numero de periodos", minval=1)
+iMACDLonga  = input(37,                                              "[MACD] Media longa: Numero de periodos", minval=2)
 iMACDSinal  = input(9,                                               "[MACD] Linha de sinal: Numero de periodos", minval=1)
 iMACDFiltro = input(false,                                           "[MACD] Usar filtro para validar MACD")
 iMACDFilVal = input(0.0,                                             "[MACD] Filtro para comprar/vender apenas com MACD abaixo/acima do valor do filtro", minval=0)
@@ -248,25 +248,27 @@ var macdTipo = iMACDTipo == "Simples" ? true : false
 var macdLine = float(na)
 var signalLine = float(na)
 if iMACDModo
-    macdLine   := ema(iMACDSrc, iMACDLonga) - ema(iMACDSrc,iMACDCurta)
+    macdLonga   = ema(iMACDSrc, iMACDLonga) 
+    macdCurta   = ema(iMACDSrc, iMACDCurta)
+    macdLine   := macdLonga - macdCurta
     signalLine := macdTipo ? sma(macdLine, iMACDSinal): ema(macdLine, iMACDSinal)
 
-plot(iMACDPlot ? daily_open - macdLine * (macdLine>signalLine?5:-5):   na, "Linha MACD", color.blue)
-plot(iMACDPlot ? daily_open - signalLine * (macdLine<signalLine?5:-5): na, "Sinal MACD", color.red)
+plot(iMACDPlot ? daily_open - macdLine:   na, "Linha MACD", color.blue)
+plot(iMACDPlot ? daily_open - signalLine: na, "Sinal MACD", color.red)
 
 eMACD() =>
 	r = 0
 	if iMACDModo == 0
 	    r := 0
 	else if iMACDForma == "Cruzamento da linha MACD com a linha de sinal"
-		if macdLine < signalLine and macdLine[1] >= signalLine[1] //  crossover(macdLine, signalLine)
+		if macdLine > signalLine and macdLine[1] <= signalLine[1] 
 			r :=  1
-		else if macdLine > signalLine and macdLine[1] <= signalLine[1] //crossunder(macdLine, signalLine)
+		else if macdLine < signalLine and macdLine[1] >= signalLine[1] 
 			r := -1
 	else if iMACDForma == "Linha MACD acima/abaixo da linha de sinal"
-		if macdLine < signalLine
+		if macdLine > signalLine
 			r := 1
-		else if macdLine > signalLine
+		else if macdLine < signalLine
 			r := -1
 	
 	if iMACDInv
@@ -445,14 +447,14 @@ eBB() =>
 	if iBBModo == 0
 	    r := 0
 	else if iBBForma == "Cruzamento do preco com as bandas"
-		if iBBSrc < bbDown and iBBSrc[1] >= bbDown[1] // crossover(iBBSrc, bbDown)
+		if iBBSrc > bbDown and iBBSrc[1] <= bbDown[1] // crossover(iBBSrc, bbDown)
 			r := 1
-		else if iBBSrc > bbDown and iBBSrc[1] <= bbDown[1] // crossunder(iBBSrc, bbUp)
+		else if iBBSrc < bbUp and iBBSrc[1] >= bbUp[1] // crossunder(iBBSrc, bbUp)
 			r := -1
 	else if iBBForma == "Preco acima/abaixo das bandas"
-		if iBBSrc < bbDown
+		if iBBSrc > bbDown
 			r := 1
-		else if iBBSrc > bbUp
+		else if iBBSrc < bbUp
 			r := -1
 	if iBBInv
 	    r := r == 1? -1: r == -1? 1: r
@@ -767,7 +769,7 @@ if eParc > 0 and eParc == t and abs(strategy.position_size) >= initialOrderAmoun
 tradeLoss = eStop==0 and iEParcialBE? eParc: eStop
 globalLoss = (strategy.netprofit - netProfit + iSDPerda) / syminfo.pointvalue / minTick
 
-if tradeLoss < globalLoss
+if tradeLoss > 0 and tradeLoss < globalLoss
     strategy.exit("SaidaTrade", profit=eTake, trail_points=eTS, trail_offset=eTSD, loss=tradeLoss, comment = "Saida Take/Loss "+ tostring(eTake) + "/" + tostring(tradeLoss))
 else
     strategy.exit("SaidaGlobal", profit=eTake, trail_points=eTS, trail_offset=eTSD, loss=globalLoss, comment = "Saida Take/GlobalLoss "+ tostring(eTake) + "/" + tostring(globalLoss))

@@ -10,7 +10,7 @@ iOPModo      = input(4, "[Estrategia] Sentido das operacoes: 0:Off 1:Comprado, 2
 iPrevinir    = input("Sim",  "[Estrategia] Habilitar bloqueio de nova entrada no mesmo dia apos uma saida", options=["Sim","Nao"])=="Sim"
 
 dummyMM= input(false, "[Medias Moveis]-------------------------------------------------------------", type = input.bool )
-iMMModo      = input(3,                                   "[MM] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
+iMMModo      = input(0,                                   "[MM] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
 iMMInv       = input("Nao",                               "[MM] Inverter", options=["Sim", "Nao"]) =="Sim"
 iMMForma     = input("Media curta acima/abaixo da longa", "[MM] Forma de uso", options=["Cruzamento das Medias", "Media curta acima/abaixo da longa"])
 iMMCurtaTipo = input("Exponencial",                       "[MM] Media Curta: Tipo", options=["Simples", "Exponencial"] )
@@ -35,7 +35,7 @@ iHLPlot  = input("Sim",                                  "[HiLo] Plotar Indice n
 
 
 dummyMACD= input(false, "[MACD]-------------------------------------------------------------------", type = input.bool )
-iMACDModo   = input(3,                                               "[MACD] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
+iMACDModo   = input(0,                                               "[MACD] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
 iMACDInv    = input("Nao",                                           "[MACD] Inverter" , options=["Sim", "Nao"]) =="Sim"
 iMACDForma  = input("Cruzamento da linha MACD com a linha de sinal", "[MACD] Modo de Operacao", options=["Cruzamento da linha MACD com a linha de sinal", "Linha MACD acima/abaixo da linha de sinal"])
 iMACDSrc    = input(close,                                           "[MACD] Valor usado")
@@ -60,7 +60,7 @@ iADXTrend = input(0,                             "[ADX] Filtro de Aumento/Diminu
 iADXPlot  = input("Sim",                         "[ADX] Plotar Indice no Grafico", options=["Sim","Nao"]) == "Sim"
  
 dummyEstocastico = input(false, "[Estocastico]-----------------------------------------------------", type = input.bool )
-iESTModo  = input(0,                                                       "[Estocastico] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
+iESTModo  = input(1,                                                       "[Estocastico] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
 iESTInv   = input("Nao",                                                   "[Estocastico] Inverter", options=["Sim", "Nao"]) =="Sim"
 iESTForma = input("Linha %K suavizada acima/abaixo da linha %D suavizada", "[Estocastico] Forma de uso", options=["Cruzamento da linha %K suavizada com a linha %D suavizada", "Linha %K suavizada acima/abaixo da linha %D suavizada"])
 iESTLen   = input(14,                                                      "[Estocastico] Numero de periodos", minval=1)
@@ -128,23 +128,23 @@ iSaidaAll     = input("Nao", "[Saida] Sair se todos os indicadores selecionados 
 
 iEMartingale    = input(0,   "[Martingale] Dobrar posição na entrada seguinte a uma perda")
 
-iEStopFixo    = input(17.00,   "[Stop fixo de perda] Stop Loss (Pontos)")
-iETakeFixo    = input(0.00,   "[Stop fixo de ganho] Stop Gain/Take Profit (Pontos)")
-iETSAtivar    = input(10.00,   "[Trailing Stop] Inicio/Ativacao (Pontos)")
-iETSDistancia = input(1.00,    "[Trailing Stop] Distância (Pontos)")
+iEStopFixo    = input(0.00,   "[Stop fixo de perda] Stop Loss (Pontos)", step = .5)
+iETakeFixo    = input(0.00,   "[Stop fixo de ganho] Stop Gain/Take Profit (Pontos)", step = .5)
+iETSAtivar    = input(0.00,   "[Trailing Stop] Inicio/Ativacao (Pontos)", step = .5)
+iETSDistancia = input(0.00,   "[Trailing Stop] Distância (Pontos)", step = .5)
 
-iEParcialT    = input(0.0,   "[Realizacao parcial] Valor Execucao")
+iEParcialT    = input(0.0,   "[Realizacao parcial] Valor Execucao", step = .5)
 iEParcialBE   = input("Nao", "[Realizacao parcial] Break-even: Posicionar stop fixo de perda no preco de entrada apos realizacao parcial", options=["Sim","Nao"]) == "Sim"
 
 dummyRisk4      = input(false, "-----------------------------------------------------------------------", type = input.bool )
-iSDPerda        = input(800.0, "[Saida Diario] Stop diario de perda (Valor absoluto financeiro (R$))", minval = 0, step = 100)
-iSDGanho        = input(1000.0, "[Saida Diario] Stop diario de ganho (Valor absoluto financeiro (R$))", minval = 0 , step = 100)
+iSDPerda        = input(99999.0, "[Saida Diario] Stop diario de perda (Valor absoluto financeiro (R$))", minval = 0, step = 100)
+iSDGanho        = input(99999.0, "[Saida Diario] Stop diario de ganho (Valor absoluto financeiro (R$))", minval = 0, step = 100)
 iSDXTrades      = input(99999,   "[Saida Diario] Parar apos X trades no dia", minval = 1)
-iSDXTradesLost  = input(3,   "[Saida Diario] Parar apos X trades Perdidas", minval = 1)
+iSDXTradesLost  = input(99999,   "[Saida Diario] Parar apos X trades Perdidas", minval = 1)
 
 dummyRisk3  = input(false, "-----------------------------------------------------------------------", type = input.bool )
 // Work time and Order time restrictions.
-iTot     = input("0900-1201", "Horario inicial/final para abrir posicoes ", type=input.session)
+iTot     = input("0900-1630", "Horario inicial/final para abrir posicoes ", type=input.session)
 iJanela1 = input("1800-1810", "Janela De bloqueio de operacoes 1", type=input.session)
 iJanela2 = input("1800-1810", "Janela De bloqueio de operacoes 2", type=input.session)
 iTwt     = input("0900-1659", "Horario final para zerar carteira", type=input.session)
@@ -152,7 +152,7 @@ iTwt     = input("0900-1659", "Horario final para zerar carteira", type=input.se
 
 dummyJanela  = input(false, "-----------------------------------------------------------------------", type = input.bool )
 iTtz   = syminfo.timezone // input("GMT-3", "What is the Time Zone")
-iTdate = input(20200616, " Data inicial para backtest: YYYYMMDD")
+iTdate = input(20200101, " Data inicial para backtest: YYYYMMDD")
 iTdias = input(365, "Dias apos a data inicial em backtest")
 
 
@@ -341,21 +341,21 @@ estSaida   = iESTModo > 1
 estK = float(na)
 estD = float(na)
 if iESTModo
-	estK := sma(stoch(close, high, low, iESTLen), iESTSuavK)
+	estK := 100 - sma(stoch(close, high, low, iESTLen), iESTSuavK)
 	//estK := sma(100 * (close - lowest(low, iESTLen)) / (highest(high, iESTLen) - lowest(low, iESTLen)), iESTSuavK)
     estD := sma(estK, iESTSuavD)
 
-plot(iESTPlot ? daily_open - estK * (estK > estD? +5: -5) : na,"K%", color.blue)
-plot(iESTPlot ? daily_open - estD * (estD > estK? +5: -5) : na,"D%", color.green)
+plot(iESTPlot ? daily_open - estK  : na,"K%", color.blue)
+plot(iESTPlot ? daily_open - estD  : na,"D%", color.red)
 
 eEST() =>
 	r = 0
 	if iESTModo == 0
 	    r := 0
 	else if iESTForma == "Cruzamento da linha %K suavizada com a linha %D suavizada"
-		if  estK > estD and estK[1] <= estD[1] // crossover(estK, estD) // estK > estD and estK[1] <= estD[1] 
+		if  crossover(estK, estD)  // estK > estD and estK[1] <= estD[1] // crossover(estK, estD) // estK > estD and estK[1] <= estD[1] 
 			r := 1
-		else if  estK < estD and estK[1] >= estD[1] //crossunder(estK, estD) //estK < estD and estK[1] >= estD[1]
+		else if  crossunder(estK, estD) //estK < estD and estK[1] >= estD[1] //crossunder(estK, estD) //estK < estD and estK[1] >= estD[1]
 			r := -1
 	else if iESTForma == "Linha %K suavizada acima/abaixo da linha %D suavizada"
 		if estK > estD

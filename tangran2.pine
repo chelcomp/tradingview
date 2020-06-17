@@ -345,8 +345,9 @@ if iESTModo
 	//estK := sma(100 * (close - lowest(low, iESTLen)) / (highest(high, iESTLen) - lowest(low, iESTLen)), iESTSuavK)
     estD := sma(estK, iESTSuavD)
 
-plot(iESTPlot ? daily_open - estK  : na,"K%", color.blue)
-plot(iESTPlot ? daily_open - estD  : na,"D%", color.red)
+plot(iESTPlot and iESTModo ? daily_open - estK * 5 : na, "K%", color.blue)
+plot(iESTPlot and iESTModo ? daily_open - estD * 5 : na, "D%", color.red )
+plot(iESTPlot and iESTModo and cross(estK, estD) ? daily_open - estK * 5: na, "Stoch Cross", color.black, 2, plot.style_cross, 0, 15)
 
 eEST() =>
 	r = 0
@@ -358,14 +359,16 @@ eEST() =>
 		else if  crossunder(estK, estD) //estK < estD and estK[1] >= estD[1] //crossunder(estK, estD) //estK < estD and estK[1] >= estD[1]
 			r := -1
 	else if iESTForma == "Linha %K suavizada acima/abaixo da linha %D suavizada"
-		if estK > estD
+		if estK >= estD
 			r := 1
-		else if estK < estD
+		else if estK <= estD
 			r := -1
-	if (iESTMin > 0 and r == 1 and estK > iESTMin) or (iESTMax < 100 and r == -1 and estK < iESTMax)
-		r := 0
+
 	if iESTInv
 	    r := r == 1? -1: r == -1? 1: r
+
+	if (iESTMin > 0 and estK > iESTMin) or (iESTMax < 100 and estK < iESTMax)
+		r := 0
 	r
 
 vwEntrada = (iVWAPModo == 1 or iVWAPModo >= 3)

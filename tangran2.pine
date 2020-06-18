@@ -447,9 +447,9 @@ if iIFRModo
 	ifrDown := rma(max(change(iIFRSrc), 0), iIFRLen)
 	ifr     := ifrDown == 0 ? 100 : ifrUp == 0 ? 0 : 100 - (100 / (1 + ifrUp / ifrDown))
 	
-plot(iIFRModo and iIFRPlot ? daily_open + iIFRMax, : na, "IFR UP",   color.green)
-plot(iIFRModo and iIFRPlot ? daily_open + iIFRMin, : na, "IFR DOWN", color.green)
-plot(iIFRModo and iIFRPlot ? daily_open + ifr,     : na, "IFR",      color.blue, linewidth=2)
+plot(iIFRModo and iIFRPlot ? daily_open + iIFRMax : na, "IFR UP",   color.green)
+plot(iIFRModo and iIFRPlot ? daily_open + iIFRMin : na, "IFR DOWN", color.green)
+plot(iIFRModo and iIFRPlot ? daily_open + ifr     : na, "IFR",      color.blue, linewidth=2)
 
 pifrMin = plot(iIFRModo and iIFRPlot ? daily_open + iIFRMin: na)
 pifrMax = plot(iIFRModo and iIFRPlot ? daily_open + iIFRMax: na)

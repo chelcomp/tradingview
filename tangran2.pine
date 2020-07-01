@@ -1,5 +1,5 @@
 //@version=4
-strategy(title="Tangram Bot 2", shorttitle="Parametros TANGRAM", slippage=3, overlay=true, pyramiding=0, calc_on_order_fills=false, calc_on_every_tick=true, backtest_fill_limits_assumption=1, default_qty_value=1, linktoseries=true, commission_type=strategy.commission.cash_per_contract, commission_value=2.5)
+strategy(title="Tangram Bot 2", shorttitle="Parametros TANGRAM", slippage=0, overlay=true, pyramiding=0, calc_on_order_fills=false, calc_on_every_tick=true, backtest_fill_limits_assumption=1, default_qty_value=10, linktoseries=false, commission_type=strategy.commission.cash_per_contract, commission_value=2.5)
 //WIN use slipage = 30
 //WDO use slipage = 5
 
@@ -15,11 +15,11 @@ iMMModo      = input(1,                                   "[MM] Modo de Operacao
 iMMInv       = input("Nao",                               "[MM] Inverter", options=["Sim", "Nao"]) =="Sim"
 iMMForma     = input("Media curta acima/abaixo da longa", "[MM] Forma de uso", options=["Cruzamento das Medias", "Media curta acima/abaixo da longa"])
 iMMCurtaTipo = input("Exponencial",                       "[MM] Media Curta: Tipo", options=["Simples", "Exponencial"] )
-iMMCurtaLen  = input(10,                                  "[MM] Media curta: Numero de periodos", minval=1)
+iMMCurtaLen  = input(9,                                  "[MM] Media curta: Numero de periodos", minval=1)
 iMMCurtaDes  = input(0,                                   "[MM] Media Curta: Deslocamento", minval=0)
 iMMCurtaSrc  = input(close,                               "[MM] Media Curta: Fonte")
 iMMLongaTipo = input("Exponencial",                       "[MM] Media Longa: Tipo", options=["Simples", "Exponencial"])
-iMMLongaLen  = input(150,                                  "[MM] Media longa: Numero de periodos", minval=1)
+iMMLongaLen  = input(40,                                  "[MM] Media longa: Numero de periodos", minval=1)
 iMMLongaDes  = input(0,                                   "[MM] Media Longa: Deslocamento", minval=0)
 iMMLongaSrc  = input(close,                               "[MM] Media Longa: Fonte")
 iMMPlot      = input("Sim",                               "[MM] Plotar Indice no Grafico", options=["Sim","Nao"]) == "Sim"
@@ -27,10 +27,10 @@ iMMPlot      = input("Sim",                               "[MM] Plotar Indice no
 
 
 dummyHilo= input(false, "[HiLo Activator]----------------------------------------------------------", type = input.bool )
-iHLModo  = input(3,                                      "[HiLo] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
+iHLModo  = input(0,                                      "[HiLo] Modo de Operacao: 0:Off 1:Entrada, 2:Saida, 3:Ambos", minval=0, maxval=3, step=1)
 iHLInv   = input("Nao",                                  "[HiLo] Inverter" , options=["Sim", "Nao"]) =="Sim"
 iHLForma = input("Sentido da escada do HiLo",            "[HiLo] Modo de Operacao", options=["Mudanca no sentido da escada do HiLo", "Sentido da escada do HiLo"])
-iHLLen   = input(13,                                     "[HiLo] Numero de periodos", minval=1, step=5)
+iHLLen   = input(13,                                     "[HiLo] Numero de periodos", minval=1, step=1)
 iHLDist  = input(1,                                      "[HiLo] Distancia", minval=0)
 iHLPlot  = input("Sim",                                  "[HiLo] Plotar Indice no Grafico", options=["Sim","Nao"]) == "Sim"
 
@@ -41,8 +41,8 @@ iMACDInv    = input("Nao",                                           "[MACD] Inv
 iMACDForma  = input("Cruzamento da linha MACD com a linha de sinal", "[MACD] Modo de Operacao", options=["Cruzamento da linha MACD com a linha de sinal", "Linha MACD acima/abaixo da linha de sinal"])
 iMACDSrc    = input(close,                                           "[MACD] Valor usado")
 iMACDTipo   = input("Exponencial",                                   "[MACD] Tipo de media", options=["Simples","Exponencial"])
-iMACDCurta  = input(13,                                              "[MACD] Media curta: Numero de periodos", minval=1)
-iMACDLonga  = input(37,                                              "[MACD] Media longa: Numero de periodos", minval=2)
+iMACDCurta  = input(12,                                              "[MACD] Media curta: Numero de periodos", minval=1)
+iMACDLonga  = input(26,                                              "[MACD] Media longa: Numero de periodos", minval=2)
 iMACDSinal  = input(9,                                               "[MACD] Linha de sinal: Numero de periodos", minval=1)
 iMACDFiltro = input(false,                                           "[MACD] Usar filtro para validar MACD")
 iMACDFilVal = input(0.0,                                             "[MACD] Filtro para comprar/vender apenas com MACD abaixo/acima do valor do filtro", minval=0)
@@ -67,8 +67,8 @@ iESTForma = input("Linha %K suavizada acima/abaixo da linha %D suavizada", "[Est
 iESTLen   = input(3,                                                       "[Estocastico] Numero de periodos", minval=1)
 iESTSuavK = input(3,                                                       "[Estocastico] Suavizador da linha K", minval=0)
 iESTSuavD = input(3,                                                       "[Estocastico] Suavizador da linha D", minval=0)
-iESTMin   = input(20,                                                      "[Estocastico] Filtro Estocastico minimo", minval=0, maxval=100)
-iESTMax   = input(80,                                                      "[Estocastico] Filtro Estocastico maximo", minval=0, maxval=100)
+iESTMax   = input(80,                                                      "[Estocastico] Filtro Estocastico maximo(Superior)", minval=0, maxval=100)
+iESTMin   = input(20,                                                      "[Estocastico] Filtro Estocastico minimo(Inferiior)", minval=0, maxval=100)
 iESTPlot  = input("Sim",                                                   "[Estocastico] Plotar Indice no Grafico", options=["Sim","Nao"]) == "Sim"
 
 
@@ -84,9 +84,9 @@ iIFRModo  = input(0,                                                        "[IF
 iIFRInv   = input("Nao",                                                    "[IFR] Inverter", options=["Sim", "Nao"]) =="Sim"
 iIFRForma = input("IFR acima/abaixo dos niveis sobrecomprado/sobrevendido", "[IFR] Forma de uso", options=["Cruzamento do IFR com os niveis", "IFR acima/abaixo dos niveis sobrecomprado/sobrevendido"])
 iIFRSrc   = input(close,                                                    "[IFR] Valor usado")
-iIFRLen   = input(7,                                                       "[IFR] Numero de periodos", minval=1)
-iIFRMin   = input(30.0,                                                     "[IFR] Nivel sobrevendido (inferior)", minval=0, maxval=100)
-iIFRMax   = input(70.0,                                                     "[IFR] Nivel sobrecomprado (superior)", minval=0, maxval=100)
+iIFRLen   = input(14,                                                       "[IFR] Numero de periodos", minval=1)
+iIFRMin   = input(20.0,                                                     "[IFR] Nivel sobrevendido (inferior)", minval=0, maxval=100)
+iIFRMax   = input(80.0,                                                     "[IFR] Nivel sobrecomprado (superior)", minval=0, maxval=100)
 iIFRPlot  = input("Sim",                                                    "[IFR] Plotar Indice no Grafico", options=["Sim","Nao"]) == "Sim"
 
 
@@ -95,7 +95,7 @@ iBBModo  = input(0,                                   "[BB] Modo de Operacao: 0:
 iBBInv   = input("Nao",                               "[BB] Inverter", options=["Sim", "Nao"]) =="Sim"
 iBBForma = input("Cruzamento do preco com as bandas", "[BB] Forma de uso", options=["Cruzamento do preco com as bandas", "Preco acima/abaixo das bandas"])
 iBBSrc   = input(close,                               "[BB] Fonte para Bolinger Bands")
-iBBLen   = input(20,                                  "[BB] Numero de periodos", minval=1)
+iBBLen   = input(14,                                  "[BB] Numero de periodos", minval=1)
 iBBDes   = input(2.0,                                 "[BB] Desvio", minval=0.001, maxval=50)
 iBBPlot  = input("Sim",                               "[BB] Plotar Indice no Grafico", options=["Sim","Nao"]) == "Sim"
 
@@ -105,7 +105,7 @@ iATRModo  = input(0,                                "[ATR] Modo de Operacao: 0:O
 iATRInv   = input("Nao",                            "[ATR] Inverter", options=["Sim", "Nao"]) =="Sim"
 iATRForma = input("Mudanca no sentido do Stop ATR", "[ATR] Forma de uso", options=["Mudanca no sentido do Stop ATR", "Sentido do Stop ATR"])
 iATRTipo  = input("Exponencial",                    "[ATR] Tipo de media", options=["Simples", "Exponencial"] )
-iATRLen   = input(14,                               "[ATR] Numero de periodos", minval=1)
+iATRLen   = input(6,                               "[ATR] Numero de periodos", minval=1)
 iATRMult  = input(2,                                "[ATR] Desvio/Multiplicador", minval=0.001, maxval=50, step=0.1)
 iATRPlot  = input("Sim",                            "[ATR] Plotar Indice no Grafico", options=["Sim","Nao"]) == "Sim"
 
@@ -129,8 +129,8 @@ iSaidaAll     = input("Nao", "[Saida] Sair se todos os indicadores selecionados 
 
 iEMartingale   = input(0,      "[Martingale] Dobrar posição na entrada seguinte a uma perda")
 
-iEStopFixo    = input(10.00,   "[Stop fixo de perda] Stop Loss (Pontos)", step = .5)
-iETakeFixo    = input(10.00,  "[Stop fixo de ganho] Stop Gain/Take Profit (Pontos)", step = .5)
+iEStopFixo    = input(0.00,   "[Stop fixo de perda] Stop Loss (Pontos)", step = .5)
+iETakeFixo    = input(0.00,  "[Stop fixo de ganho] Stop Gain/Take Profit (Pontos)", step = .5)
 iETSAtivar    = input(0.00,   "[Trailing Stop] Inicio/Ativacao (Pontos)", step = .5)
 iETSDistancia = input(0.00,   "[Trailing Stop] Distância (Pontos)", step = .5)
 
@@ -139,8 +139,8 @@ iEParcialBE   = input("Nao", "[Realizacao parcial] Break-even: Posicionar stop f
 
 dummyRisk4      = input(false, "-----------------------------------------------------------------------", type = input.bool )
 iSDPerda        = input(999900.0, "[Saida Diario] Stop diario de perda (Valor absoluto financeiro (R$))", minval = 0, step = 100)
-iSDGanho        = input(999999.0, "[Saida Diario] Stop diario de ganho (Valor absoluto financeiro (R$))", minval = 0, step = 100)
-iSDXTrades      = input(99999,   "[Saida Diario] Parar apos X trades no dia", minval = 1)
+iSDGanho        = input(600.0, "[Saida Diario] Stop diario de ganho (Valor absoluto financeiro (R$))", minval = 0, step = 100)
+iSDXTrades      = input(1,   "[Saida Diario] Parar apos X trades no dia", minval = 1)
 iSDXTradesLost  = input(99999,   "[Saida Diario] Parar apos X trades Perdidas", minval = 1)
 
 dummyRisk3  = input(false, "-----------------------------------------------------------------------", type = input.bool )
@@ -159,13 +159,15 @@ iTdias = input(365, "Dias apos a data inicial em backtest")
 
 // Fix Tick on especial assets
 iFixMinTick = input(0.0, "Ajusta o tick no Tradingview", minval=0.0, type=input.float)
+plotGraphMultiplier = input(4, "Graph Zoom")
+
 
 // === DEPENDENCE AND FUNCTIONS ===
 
 // GLOBAL VARIABLE
 float daily_open = na
 daily_open := dayofmonth != dayofmonth[1]? open: daily_open[1]
-graphMultiplier = 2 //round(syminfo.mintick)
+
  
 
 
@@ -259,14 +261,16 @@ var macdTipo = iMACDTipo == "Simples"
 var macdLine = float(na)
 var signalLine = float(na)
 if iMACDModo
-    macdLonga   = ema(iMACDSrc, iMACDLonga) 
-    macdCurta   = ema(iMACDSrc, iMACDCurta)
-    macdLine   := macdLonga - macdCurta
+    macdLonga   = ema(iMACDSrc, iMACDLonga) // slow 
+    macdCurta   = ema(iMACDSrc, iMACDCurta) // fast
+    
+    
+    macdLine   := macdCurta - macdLonga
     signalLine := macdTipo ? sma(macdLine, iMACDSinal): ema(macdLine, iMACDSinal)
 
-plot(iMACDPlot ? daily_open + macdLine  : na, "Linha MACD", color.blue)
-plot(iMACDPlot ? daily_open + signalLine: na, "Sinal MACD", color.red)
-plot(iMACDPlot and cross(macdLine, signalLine)? daily_open + avg(macdLine, signalLine) : na, "MACD CRoss", color.black, 2, plot.style_cross, 0, 15)
+plot(iMACDPlot ? daily_open + macdLine * plotGraphMultiplier : na, "Linha MACD", color.blue)
+plot(iMACDPlot ? daily_open + signalLine * plotGraphMultiplier : na, "Sinal MACD", color.red)
+plot(iMACDPlot and cross(macdLine, signalLine)? daily_open + avg(macdLine, signalLine) * plotGraphMultiplier: na, "MACD CRoss", color.black, 2, plot.style_cross, 0, 15)
 
 eMACD() =>
 	r = 0
@@ -313,14 +317,19 @@ if iADXModo
 	adxPlusDM := na(adxUp) ? na : (adxUp > adxDown and adxUp > 0 ? adxUp : 0)
 	adxMinusDM := na(adxDown) ? na : (adxDown > adxUp and adxDown > 0 ? adxDown : 0)
 	adxTrur := rma(tr, iADXLen)
-	adxPlus := fixnan(100 * rma(adxPlusDM, iADXLen) / adxTrur)
+	adxPlus  := fixnan(100 * rma(adxPlusDM, iADXLen) / adxTrur)
 	adxMinus := fixnan(100 * rma(adxMinusDM, iADXLen) / adxTrur)
+	//adxSum := adxPlus + adxMinus
+	//adxLine := (100 * rma(abs(adxPlus - adxMinus) / (adxSum == 0 ? 1 : adxSum), iADXSuave))
 	adxSum := adxPlus + adxMinus
-	adxLine := 100-(100 * rma(abs(adxPlus - adxMinus) / (adxSum == 0 ? 1 : adxSum), iADXSuave))
+	//adxLine := rma(abs(adxPlus - adxMinus) / (adxSum == 0 ? 1 : adxSum), iADXSuave)
+	//adxLine := sma(adxSum, iADXSuave) 
+	DX = abs(adxPlus-adxMinus) / max(adxSum,1) * 100
+    adxLine := rma(DX, iADXSuave)
 	
-plot(iADXPlot ? daily_open + pow(adxPlus,2)  : na,"DI+", color.blue)
-plot(iADXPlot ? daily_open + pow(adxMinus,2) : na,"DI-", color.orange)
-plot(iADXPlot ? daily_open + pow(adxLine,2)  : na,"ADX", color.red, linewidth=2)
+plot(iADXPlot ? daily_open + adxPlus  * plotGraphMultiplier * 10 : na,"DI+", color.blue)
+plot(iADXPlot ? daily_open + adxMinus * plotGraphMultiplier * 10 : na,"DI-", color.orange)
+plot(iADXPlot ? daily_open + adxLine  * plotGraphMultiplier * 10 : na,"ADX", color.red, linewidth=2)
 
 eADX() =>
 	r = 0
@@ -328,12 +337,12 @@ eADX() =>
     	if iADXForma == "Cruzamento do DI+ com o DI-"
     		if crossover(adxPlus, adxMinus) //adxPlus > adxMinus and adxPlus[1] <= adxMinus[1]//crossover(adxPlus, adxMinus)
     			r := 1
-    		else if crossover(adxMinus, adxPlus) //adxPlus < adxMinus and adxPlus[1] >= adxMinus[1] //crossover(adxMinus, adxPlus)
+    		else if crossunder(adxPlus, adxMinus) //adxPlus < adxMinus and adxPlus[1] >= adxMinus[1] //crossover(adxMinus, adxPlus)
     			r := -1
     	else if iADXForma == "DI+ acima/abaixo do DI-"
     		if adxPlus > adxMinus
     			r := 1
-    		else if adxMinus < adxPlus
+    		else if adxPlus < adxMinus 
     			r := -1
     	if iADXInv
             r := r == 1? -1: r == -1? 1: r
@@ -343,9 +352,9 @@ eADXLine() =>
 	if iADXModo != 0
     	if adxLine >= iADXMin and adxLine <= iADXMax
     		r := 1
-    	if iADXTrend > 0 and (adxLine <= adxLine[1])
+    	if iADXTrend > 0 and adxLine <= adxLine[1]
     		r := 0
-    	else if iADXTrend < 0 and (adxLine >= adxLine[1])
+    	else if iADXTrend < 0 and adxLine >= adxLine[1]
     		r := 0
 	r
 
@@ -361,12 +370,12 @@ if iESTModo
 	//estK := sma(100 * (close - lowest(low, iESTLen)) / (highest(high, iESTLen) - lowest(low, iESTLen)), iESTSuavK)
     estD := sma(estK, iESTSuavD)
 
-p = plot(iESTPlot and iESTModo ? daily_open + estK : na, "K%", color.blue)
-plot(iESTPlot and iESTModo     ? daily_open + estD : na, "D%", color.red )
-plot(iESTPlot and iESTModo and cross(estK, estD) ? daily_open + avg(estK, estD): na, "Stoch Cross", color.black, 2, plot.style_cross, 0, 15)
+p = plot(iESTPlot and iESTModo ? daily_open + estK * plotGraphMultiplier: na, "K%", color.blue)
+plot(iESTPlot and iESTModo     ? daily_open + estD * plotGraphMultiplier: na, "D%", color.red )
+plot(iESTPlot and iESTModo and cross(estK, estD) ? daily_open + avg(estK, estD) * plotGraphMultiplier: na, "Stoch Cross", color.black, 2, plot.style_cross, 0, 15)
 
-pestMin = plot(iESTPlot and iESTModo and iESTMin > 0  ? daily_open + iESTMin: na)
-pestMax = plot(iESTPlot and iESTModo and iESTMax < 100? daily_open + iESTMax: na)
+pestMin = plot(iESTPlot and iESTModo and iESTMin > 0  ? daily_open + iESTMin * plotGraphMultiplier: na)
+pestMax = plot(iESTPlot and iESTModo and iESTMax < 100? daily_open + iESTMax * plotGraphMultiplier: na)
 fill(pestMax, pestMin)
 
 //if(iESTPlot and iESTModo and cross(estK, estD))
@@ -443,16 +452,16 @@ ifrUp   = 0.0
 ifrDown = 0.0
 ifr     = 0.0
 if iIFRModo
-	ifrUp   := rma(-min(change(iIFRSrc), 0), iIFRLen)
-	ifrDown := rma(max(change(iIFRSrc), 0), iIFRLen)
+	ifrUp   := rma(max(change(iIFRSrc), 0), iIFRLen)
+	ifrDown := rma(-min(change(iIFRSrc), 0), iIFRLen)
 	ifr     := ifrDown == 0 ? 100 : ifrUp == 0 ? 0 : 100 - (100 / (1 + ifrUp / ifrDown))
 	
-plot(iIFRModo and iIFRPlot ? daily_open + iIFRMax : na, "IFR UP",   color.green)
-plot(iIFRModo and iIFRPlot ? daily_open + iIFRMin : na, "IFR DOWN", color.green)
-plot(iIFRModo and iIFRPlot ? daily_open + ifr     : na, "IFR",      color.blue, linewidth=2)
+plot(iIFRModo and iIFRPlot ? daily_open + iIFRMax * plotGraphMultiplier : na, "IFR UP",   color.green)
+plot(iIFRModo and iIFRPlot ? daily_open + iIFRMin * plotGraphMultiplier : na, "IFR DOWN", color.green)
+plot(iIFRModo and iIFRPlot ? daily_open + ifr     * plotGraphMultiplier : na, "IFR",      color.blue, linewidth=2)
 
-pifrMin = plot(iIFRModo and iIFRPlot ? daily_open + iIFRMin: na)
-pifrMax = plot(iIFRModo and iIFRPlot ? daily_open + iIFRMax: na)
+pifrMin = plot(iIFRModo and iIFRPlot ? daily_open + iIFRMin  * plotGraphMultiplier: na)
+pifrMax = plot(iIFRModo and iIFRPlot ? daily_open + iIFRMax  * plotGraphMultiplier: na)
 fill(pifrMax, pifrMin)
 
 eIFR() => 
@@ -466,9 +475,9 @@ eIFR() =>
 			r := -1
 	else if iIFRForma == "IFR acima/abaixo dos niveis sobrecomprado/sobrevendido"
 		if ifr > iIFRMax
-			r := 1
-		else if ifr < iIFRMin
 			r := -1
+		else if ifr < iIFRMin
+			r := 1
 	if iIFRInv
 	    r := r == 1? -1: r == -1? 1: r
 	r
@@ -504,10 +513,10 @@ eBB() =>
 		else if crossunder(iBBSrc, bbUp) //iBBSrc < bbUp and iBBSrc[1] >= bbUp[1] // crossunder(iBBSrc, bbUp)
 			r := -1
 	else if iBBForma == "Preco acima/abaixo das bandas"
-		if iBBSrc > bbDown
-			r := 1
-		else if iBBSrc < bbUp
+		if iBBSrc > bbUp
 			r := -1
+		else if iBBSrc < bbDown 
+			r := 1
 	if iBBInv
 	    r := r == 1? -1: r == -1? 1: r
 	r
@@ -593,19 +602,17 @@ var intradayLostOrder = 0
 var dayStop = false
 
 if dayofmonth[1] != dayofmonth
-	cumulativeLastDayNetProfit    := strategy.netprofit[1]
-	cumulativeLastDayFilledOrders := strategy.closedtrades[1]
-	cumulativeLastDayLostdOrders  := strategy.losstrades[1]
+	cumulativeLastDayNetProfit    := strategy.netprofit
+	cumulativeLastDayFilledOrders := strategy.losstrades + strategy.wintrades
+	cumulativeLastDayLostdOrders  := strategy.losstrades
 	intradayFilledOrder           := 0
 	intradayLostOrder             := 0
     intradayProfit                := 0
     dayStop                       := false
 
-intradayFilledOrder := strategy.closedtrades - cumulativeLastDayFilledOrders
-intradayLostOrder   := strategy.losstrades   - cumulativeLastDayLostdOrders
-intradayProfit      := strategy.netprofit    - cumulativeLastDayNetProfit //+ strategy.openprofit
-//strategy.risk.max_intraday_loss(iSDPerda, strategy.cash)
-//strategy.risk.max_intraday_filled_orders(iSDXTrades)
+intradayFilledOrder := strategy.losstrades + strategy.wintrades  - cumulativeLastDayFilledOrders + strategy.opentrades 
+intradayLostOrder   := strategy.losstrades - cumulativeLastDayLostdOrders 
+intradayProfit      := strategy.netprofit  + strategy.openprofit - cumulativeLastDayNetProfit   
 
 if not dayStop
     dayStop :=            intradayProfit      >= iSDGanho 
@@ -624,7 +631,6 @@ wot =   time('1', iTot)
 wwt =   time('1', iTwt)
 wjan1 = time('1', iJanela1)
 wjan2 = time('1', iJanela2)
-
 
 woti = timestamp(iTtz, wy, wm, wd, 0, 0)
 wotf = woti + (iTdias * 86400000)
@@ -653,7 +659,6 @@ eTake = iETakeFixo    > 0 ? iETakeFixo    / minTick: na
 eTS   = iETSAtivar    > 0 ? iETSAtivar    / minTick: na
 eTSD  = iETSDistancia > 0 ? iETSDistancia / minTick: na
 eParc = iEParcialT    > 0 ? iEParcialT    / minTick: na
-
 
 cEntradas() =>
 	ce = ""
@@ -764,9 +769,8 @@ saidaVenda() =>
 	sv := sv + (sarSaida  and eSAR()  > 0? "J" : na)
 	venda = strategy.position_size < 0
 	venda := venda and sv != na 
-	venda := venda and workTimeWindow //or (iSaidaAll? c == cSaidas(): c > 0)
-	venda := venda and barstate.isconfirmed
 	venda := venda and (not iSaidaAll or sv == cSaidas()) 
+	venda := venda and barstate.isconfirmed
 	venda
 
 // === MARTIGALE =========
@@ -812,21 +816,27 @@ sVenda  = saidaVenda()  and not eCompra and not eVenda
 strategy.close("Compra", when=sCompra, comment = "SC " + openProfit)
 strategy.close("Venda" , when=sVenda , comment = "SV " + openProfit)
 
+// -----------------------------------------------------------------------------------------
+
 minNonZero(v1, v2)=>
     nz(v1)>0 and nz(v2)>0? min(v1, v2) :max(v1, v2)
-    
-t = minNonZero(eParc, eTake) 
-if eParc > 0 and eParc == t and abs(strategy.position_size) >= initialOrderAmount 
-    strategy.exit("SaidaParcial", qty_percent=50, profit=eParc, trail_points=eTS, trail_offset=eTSD, loss=eStop, comment = "Saida Take Parcial")
+
+globalLoss = (abs(intradayProfit + strategy.openprofit + iSDPerda) / syminfo.pointvalue) / minTick
+globalGain = (abs(intradayProfit + strategy.openprofit - iSDGanho) / syminfo.pointvalue) / minTick
 
 tradeLoss = eStop==0 and iEParcialBE ? eParc: eStop
-globalLoss = (intradayProfit + iSDPerda) / syminfo.pointvalue / minTick
+tradeLoss := minNonZero(tradeLoss, globalLoss)
+tradeTake = minNonZero(eTake, globalGain)
 
-if tradeLoss > 0 and tradeLoss < globalLoss
-    strategy.exit("SaidaTrade",  profit=eTake, trail_points=eTS, trail_offset=eTSD, loss=tradeLoss, comment = "Saida Take/Loss " + tostring(iETakeFixo) + "/" + tostring(tradeLoss * minTick))
+if eParc > 0 and eParc < tradeTake and abs(strategy.position_size) >= initialOrderAmount 
+    strategy.exit("SaidaParcial", qty_percent=50, profit=eParc, trail_points=eTS, trail_offset=eTSD, loss=eStop, comment = "Saida Take Parcial")
 else
-    strategy.exit("SaidaGlobal", profit=eTake, trail_points=eTS, trail_offset=eTSD, loss=globalLoss, comment = "Saida Take/GlobalLoss " + tostring(iETakeFixo) + "/" + tostring(globalLoss * minTick))
-
-getOut = not workTimeWindow and strategy.position_size != 0
+    //l = label.new(bar_index, na, tostring(tradeTake) + " / " + tostring(tradeLoss), color=color.green, textcolor=color.white, style=label.style_labeldown, yloc=yloc.abovebar)
+    strategy.exit("Saida",  profit=tradeTake, trail_points=eTS, trail_offset=eTSD, loss=tradeLoss, comment = "Saida Take/Loss " + tostring(tradeTake) + "/" + tostring(tradeLoss * minTick))
+    
+getOut = not workTimeWindow
 strategy.cancel_all(getOut)
 strategy.close_all(getOut, comment = "Close ALL")
+
+strategy.risk.max_intraday_loss(iSDPerda, strategy.cash)
+strategy.risk.max_intraday_filled_orders(iSDXTrades * 2)

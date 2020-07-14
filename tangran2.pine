@@ -1,5 +1,7 @@
 //@version=4
-strategy(title="Tangram Bot 2", shorttitle="Parametros TANGRAM", slippage=1, overlay=true, pyramiding=0, calc_on_order_fills=false, calc_on_every_tick=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100, linktoseries=false, commission_type=strategy.commission.cash_per_order, commission_value=2.5 )
+strategy(title="Tangram Bot 2", shorttitle="Parametros TANGRAM", slippage=1, overlay=true, pyramiding=0, calc_on_order_fills=false, calc_on_every_tick=true, backtest_fill_limits_assumption=1, default_qty_type=strategy.percent_of_equity, default_qty_value=100, linktoseries=false, commission_type=strategy.commission.cash_per_order, commission_value=2.5 )
+//strategy(title="Tangram Bot 2", shorttitle="Parametros TANGRAM", slippage=0, overlay=true, pyramiding=0, calc_on_order_fills=false, calc_on_every_tick=true, backtest_fill_limits_assumption=1, default_qty_value=10, linktoseries=false, commission_type=strategy.commission.cash_per_contract, commission_value=2.5)
+
 //WIN use slipage = 30
 //WDO use slipage = 5
 
@@ -125,23 +127,24 @@ dummyRisk2  = input(false, "[Criterios de Saida]--------------------------------
 // === RISK MANAGEMENT VALUE PREP ===
 // if an input is less than 1, assuming not wanted so we assign 'na' value to disable it.
 iSaidaAll     = input("Nao", "[Saida] Sair se todos os indicadores selecionados para saida sinalizarem", options=["Sim","Nao"])=="Sim"
+iTipoStop     = input("Percentual", "[Saida] Saida por valor Absoluto ou Percentual", options=["Absoluto","Percentual"])
 
 
 iEMartingale   = input(0,      "[Martingale] Dobrar posição na entrada seguinte a uma perda")
 
-iEStopFixo    = input(0.00,   "[Stop fixo de perda] Stop Loss (Pontos)", step = .01)
-iETakeFixo    = input(0.00,  "[Stop fixo de ganho] Stop Gain/Take Profit (Pontos)", step = .01)
-iETSAtivar    = input(0.00,   "[Trailing Stop] Inicio/Ativacao (Pontos)", step = .01)
-iETSDistancia = input(0.00,   "[Trailing Stop] Distância (Pontos)", step = .01)
+iEStopFixo    = input(6.00,   "[Stop fixo de perda] Stop Loss (Pontos/Perc)", step = .01)
+iETakeFixo    = input(11.00,   "[Stop fixo de ganho] Stop Gain/Take Profit (Pontos/Perc)", step = .01)
+iETSAtivar    = input(6.00,   "[Trailing Stop] Inicio/Ativacao (Pontos/Perc)", step = .01)
+iETSDistancia = input(0.05,   "[Trailing Stop] Distância (Pontos)", step = .01)
 
 iEParcialT    = input(0.0,   "[Realizacao parcial] Valor Execucao", step = .01)
 iEParcialBE   = input("Nao", "[Realizacao parcial] Break-even: Posicionar stop fixo de perda no preco de entrada apos realizacao parcial", options=["Sim","Nao"]) == "Sim"
 
 dummyRisk4      = input(false, "-----------------------------------------------------------------------", type = input.bool )
-iSDPerda        = input(400, "[Saida Diario] Stop diario de perda (Valor absoluto financeiro (R$))", minval = 0, step = 100)
+iSDPerda        = input(400,    "[Saida Diario] Stop diario de perda (Valor absoluto financeiro (R$))", minval = 0, step = 100)
 iSDGanho        = input(999900, "[Saida Diario] Stop diario de ganho (Valor absoluto financeiro (R$))", minval = 0, step = 100)
-iSDXTrades      = input(99,   "[Saida Diario] Parar apos X trades no dia", minval = 1)
-iSDXTradesLost  = input(99,   "[Saida Diario] Parar apos X trades Perdidas", minval = 1)
+iSDXTrades      = input(99,     "[Saida Diario] Parar apos X trades no dia", minval = 1)
+iSDXTradesLost  = input(99,     "[Saida Diario] Parar apos X trades Perdidas", minval = 1)
 
 dummyRisk3  = input(false, "-----------------------------------------------------------------------", type = input.bool )
 // Work time and Order time restrictions.
@@ -629,8 +632,8 @@ wd = getNum(iTdate, 2) * 10   + getNum(iTdate, 1)
 
 wot =   time('1', iTot)
 wwt =   time('1', iTwt)
-wjan1 = time('1', iJanela1)
-wjan2 = time('1', iJanela2)
+wjan1 = nz(time('1', iJanela1))
+wjan2 = nz(time('1', iJanela2))
 
 woti = timestamp(iTtz, wy, wm, wd, 0, 0)
 wotf = woti + (iTdias * 86400000)
@@ -652,13 +655,7 @@ bgcolor(allowedToEnterOrder ? color.white: workTimeWindow ? color.yellow: color.
 // === SERIES SETUP  GENERAL ===
 minTick  = iFixMinTick ? iFixMinTick: syminfo.mintick
 
-// === RISK MANAGEMENT VALUE PREP ===
-// if an input is less than 1, assuming not wanted so we assign 'na' value to disable it.
-eStop = iEStopFixo    > 0 ? iEStopFixo    / minTick: na
-eTake = iETakeFixo    > 0 ? iETakeFixo    / minTick: na
-eTS   = iETSAtivar    > 0 ? iETSAtivar    / minTick: na
-eTSD  = iETSDistancia > 0 ? iETSDistancia / minTick: na
-eParc = iEParcialT    > 0 ? iEParcialT    / minTick: na
+
 
 cEntradas() =>
 	ce = ""
@@ -779,8 +776,8 @@ var martigaleOrderMultiplier = 1
 
 if nz(initialOrderAmount) == 0  and strategy.position_size != 0
     initialOrderAmount := abs(strategy.position_size)
-else if nz(initialOrderAmount) != 0  and strategy.position_size == 0
-    initialOrderAmount := na
+//else if nz(initialOrderAmount) != 0  and strategy.position_size == 0
+//    initialOrderAmount := na
 
 var lossTrades = 0
 var wintrades = 0
@@ -819,9 +816,36 @@ strategy.close("Compra", when=sCompra, comment = "SC " + openProfit)
 strategy.close("Venda" , when=sVenda , comment = "SV " + openProfit)
 
 // -----------------------------------------------------------------------------------------
-
 minNonZero(v1, v2)=>
     nz(v1)>0 and nz(v2)>0? min(v1, v2) :max(v1, v2)
+
+// === RISK MANAGEMENT VALUE PREP ===
+float iEStopFixoA = na
+float iETakeFixoA = na
+float iETSAtivarA = na
+float iEParcialTA = na
+ 
+if iTipoStop == "Percentual" 
+    iEStopFixoA := close * iEStopFixo / 100
+    iETakeFixoA := close * iETakeFixo / 100
+    iETSAtivarA := close * iETSAtivar / 100
+    iEParcialTA := close * iEParcialT / 100
+else if iTipoStop == "Absoluto" 
+    iEStopFixoA := iEStopFixo
+    iETakeFixoA := iETakeFixo
+    iETSAtivarA := iETSAtivar
+    iEParcialTA := iEParcialT
+
+
+//l = label.new(bar_index, na, tostring(iEStopFixoA) , color=color.green, textcolor=color.white, style=label.style_labeldown, yloc=yloc.abovebar)
+
+
+// if an input is less than 1, assuming not wanted so we assign 'na' value to disable it.
+eStop = iEStopFixo    > 0 ? iEStopFixoA    / minTick: na
+eTake = iETakeFixo    > 0 ? iETakeFixoA    / minTick: na
+eTS   = iETSAtivar    > 0 ? iETSAtivarA    / minTick: na
+eTSD  = iETSDistancia > 0 ? iETSDistancia / minTick: na
+eParc = iEParcialT    > 0 ? iEParcialTA    / minTick: na
 
 globalLoss = (abs(intradayProfit + strategy.openprofit + iSDPerda) / syminfo.pointvalue) / minTick
 globalGain = (abs(intradayProfit + strategy.openprofit - iSDGanho) / syminfo.pointvalue) / minTick
@@ -830,10 +854,12 @@ tradeLoss = nz(eStop)==0 and iEParcialBE ? nz(eParc): nz(eStop)
 tradeLoss := minNonZero(nz(tradeLoss), nz(globalLoss))
 tradeTake = minNonZero(nz(eTake), nz(globalGain))
 
+//l = label.new(bar_index, na, tostring(eTake) , color=color.green, textcolor=color.white, style=label.style_labeldown, yloc=yloc.abovebar)
+    
+
 if nz(eParc) > 0 and eParc < tradeTake and abs(strategy.position_size) >= initialOrderAmount 
     strategy.exit("SaidaParcial", qty_percent=50, profit=eParc, trail_points=eTS, trail_offset=eTSD, loss=eStop, comment = "Saida Take Parcial")
 else
-    //l = label.new(bar_index, na, tostring(eParc) + " / " + tostring(eTake) + " / " + tostring(globalGain), color=color.green, textcolor=color.white, style=label.style_labeldown, yloc=yloc.abovebar)
     strategy.exit("Saida",  profit=tradeTake, trail_points=eTS, trail_offset=eTSD, loss=tradeLoss, comment = "Saida Take/Loss " + tostring(tradeTake) + "/" + tostring(tradeLoss * minTick))
     
 getOut = not workTimeWindow
